@@ -1,0 +1,51 @@
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>OpenLayers map</title>
+    <link rel='stylesheet' href='./lib/v7.3.0-package/ol.css'>
+    <link rel='stylesheet' href='./styles.css'>
+    <!-- <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css'>
+    <script src='https://unpkg.com/elm-pep'></script> -->
+</head>
+<body>
+    <div id='js-map' class='map'> </div>
+    <div id='menu-bar'>
+        <div class='menu-item'>
+            <input type='file' id='upload-file' hidden='hidden'>
+            <button class='menu-button' id='upload-btn' onclick='UploadFileGeoJSON()'>Upload file .GeoJSON</button>
+            <!-- <span id='upload-text'></span> -->
+        </div>
+        <hr>
+        <div class='menu-item'>
+            <button class='menu-button' id='feature-btn' onclick='myFunction()'>Draw new figure</button>
+            <div id="myDropdown" class='feature-btn-content'>
+                <p value='Point'>Point</p>
+                <p value='LineString'>LineString</p>
+                <p value='Polygon'>Polygon</p>
+                <p value='Circle'>Circle</p>
+              </div>
+            <span> 
+            <form>
+            <label for='type'><br> Geometry&nbsp;type:</label>
+            <select id='type'>
+                <option value='Point'>Point</option>
+                <option value='LineString'>LineString</option>
+                <option value='Polygon'>Polygon</option>
+                <option value='Circle'>Circle</option>
+            </select>
+            </form>
+            </span>
+        </div>
+        <hr>
+    </div>
+    
+    
+</body>
+</html>
+<script src='./lib/v7.3.0-package/dist/ol.js'></script>
+<!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
+<script src='https://cdn.jsdelivr.net/npm/elm-pep@1.0.6/dist/elm-pep.js'></script>
+<script src='./main.js'></script>
+<script type='module' src='drawFeatures.js'></script>
