@@ -19,24 +19,21 @@
         </div>
         <hr>
         <div class='menu-item'>
-            <button class='menu-button' id='feature-btn' onclick='myFunction()'>Draw new figure</button>
-            <div id="myDropdown" class='feature-btn-content'>
-                <p value='Point'>Point</p>
-                <p value='LineString'>LineString</p>
-                <p value='Polygon'>Polygon</p>
-                <p value='Circle'>Circle</p>
-              </div>
-            <span> 
+            
+            <button class='menu-button' id='feature-btn'> Draw new figure </button>
+            <button class='menu-button' id='feature-end-btn'> Finish </button>
             <form>
-            <label for='type'><br> Geometry&nbsp;type:</label>
+            <label for='type'><br> Type:</label>
             <select id='type'>
                 <option value='Point'>Point</option>
                 <option value='LineString'>LineString</option>
                 <option value='Polygon'>Polygon</option>
+                <!--<option value="Box">Box</option>-->
                 <option value='Circle'>Circle</option>
             </select>
-            </form>
-            </span>
+            </form>&nbsp;
+            <button class='menu-button-undo' id='feature-undo-btn'> Undo </button>
+            
         </div>
         <hr>
     </div>

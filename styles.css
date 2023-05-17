@@ -21,7 +21,7 @@ body {
     z-index: 10;
     top: 50%;
     height: 50%;
-    width: 20%;
+    width: 240px;
     background-color: #8dafb9b4;
     box-shadow: 10px 10px 5 #8dafb9b4 inset, -10px -10px 5 #8dafb9b4 inset;
 }
@@ -41,6 +41,24 @@ body {
     color: black;
 }
 .menu-button:hover {
+    box-shadow: 0 0 5px #0485ad;
+    -moz-box-shadow: 0 0 5px #0485ad;
+    -o-box-shadow: 0 0 5px #0485ad;
+    -ms-box-shadow: 0 0 12px #0485ad;
+    -webkit-box-shadow: 0 0 5px #0485ad;
+} 
+
+
+.menu-button-undo {
+    /*display: flex;*/
+    /*padding: 5px;*/
+    background-color: #d2e4ea;
+    border: 1px solid #0485ad;
+    border-color: #0485ad;
+    /*border-radius: 5px;*/
+    color: black;
+}
+.menu-button-undo:hover {
     box-shadow: 0 0 5px #0485ad;
     -moz-box-shadow: 0 0 5px #0485ad;
     -o-box-shadow: 0 0 5px #0485ad;

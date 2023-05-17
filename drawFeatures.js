@@ -1,4 +1,5 @@
-import {Draw, Modify, Snap} from 'ol/interaction.js'
+import {Modify, Snap} from 'ol/interaction.js'
+import Draw, {createBox,} from 'ol/interaction/Draw.js';
 import {Vector as VectorSource} from 'ol/source.js'
 import {Vector as VectorLayer} from 'ol/layer.js'
 
@@ -23,10 +24,18 @@ let draw, snap; // global so we can remove them later
 const typeSelect = document.getElementById('type')
 
 function addInteractions() {
+  /*let geometryFunction
+  if (typeSelect.value === 'Box') {
+    console.log('i do this one')
+    geometryFunction = createBox()
+    
+  }*/
+
   draw = new Draw({
     source: source,
-    type: typeSelect.value,
-  });
+    type: typeSelect.value
+    //geometryFunction: geometryFunction
+  })
   map.addInteraction(draw)
   snap = new Snap({source: source})
   map.addInteraction(snap)
@@ -34,16 +43,24 @@ function addInteractions() {
 
 /**
  * Handle change event.
- */
+ 
 typeSelect.onchange = function () {
   map.removeInteraction(draw)
   map.removeInteraction(snap)
-  addInteractions()
+  //addInteractions()
 };
+*/
 
 let addFeature = document.getElementById('feature-btn')
 addFeature.onclick = ()=>{
   addInteractions()
-  map.removeInteraction(draw)
-  map.removeInteraction(snap)
 }
+
+let endEnter = document.getElementById('feature-end-btn')
+endEnter.onclick = ()=>{
+    map.removeInteraction(draw)
+    map.removeInteraction(snap)
+}
+document.getElementById('feature-undo-btn').addEventListener('click', function () {
+  draw.removeLastPoint()
+})
