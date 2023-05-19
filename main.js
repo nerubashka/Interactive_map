@@ -1,11 +1,3 @@
-/*window.onload = init;
-function init(){
-    // upload vector data
-    UploadFileGeoJSON(map)
-    // фишечки
-    MapControl(map)
-}*/
-
 const map = new ol.Map({
     view: new ol.View({
         center: [4175891.7770009562, 7494601.666061781],
@@ -16,7 +8,8 @@ const map = new ol.Map({
     }),
     layers: [
         new ol.layer.Tile({
-            source: new ol.source.OSM()
+            source: new ol.source.OSM(),
+            title: 'OSM VectorTileLayer'
         })
     ],
     target: 'js-map'
@@ -53,6 +46,8 @@ uploadFile.addEventListener('change', ()=>{
 function UploadFileGeoJSON(){
     uploadFile.click()
 }
+
+
 
 // фишки
 function MapControl() {

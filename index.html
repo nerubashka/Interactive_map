@@ -19,23 +19,40 @@
         </div>
         <hr>
         <div class='menu-item'>
-            
-            <button class='menu-button' id='feature-btn'> Draw new figure </button>
-            <button class='menu-button' id='feature-end-btn'> Finish </button>
+            <table>
+            <tr><td><button class='menu-button' id='feature-btn'> Draw new figure </button></td>
+                <td><button class='menu-button' id='feature-end-btn'> Finish </button></td></tr>
+            </table>
+            <table style='margin-top: -12px; margin-bottom: -12px'>
+            <tr><td><form>
+                    <label for='feature-type'><br> Type:&nbsp;</label>
+                    <select id='feature-type'>
+                        <option value='Point'>Point</option>
+                        <option value='LineString'>LineString</option>
+                        <option value="Square">Square</option>
+                        <option value='Box'>Box</option>
+                        <option value='Polygon'>Polygon</option>
+                        <option value='Circle'>Circle</option>
+                    </select>
+                    </form></td>
+                <td><button class='menu-button-undo'  id='feature-undo-btn'> Undo </button></td></tr>
+            </table>
             <form>
-            <label for='type'><br> Type:</label>
-            <select id='type'>
-                <option value='Point'>Point</option>
-                <option value='LineString'>LineString</option>
-                <option value='Polygon'>Polygon</option>
-                <!--<option value="Box">Box</option>-->
-                <option value='Circle'>Circle</option>
-            </select>
-            </form>&nbsp;
-            <button class='menu-button-undo' id='feature-undo-btn'> Undo </button>
-            
+                <input type='checkbox' id='modify' checked> Modify features <!---->
+            </form>
         </div>
         <hr>
+        <div class='menu-item'>
+            <button class='menu-button' id='select-btn'> Select features </button>
+            <form style='margin-top: 12px'>
+                <label for='select-type'>Type: &nbsp;</label>
+                <select id='select-type'>
+                    <option value='singleselect' selected>Single Select</option>
+                    <option value='multiselect'>Multi Select</option>
+                    <option value='singleselect-hover'>Single Select on hover</option>
+                </select>
+            </form>
+        </div>
     </div>
     
     
