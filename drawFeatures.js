@@ -76,6 +76,7 @@ const vector = new VectorLayer({
   },
   name: 'VectorLayer'
 })
+layers[1].push(vector)
 map.addLayer(vector)
 
 // Изменять полигоны
@@ -95,39 +96,73 @@ modifyChange.addEventListener('change', ()=>{
   
 })
 
-
 map.addInteraction(modify)
 
-let draw, snap; // global so we can remove them later
+let draw = 0, snap; // global so we can remove them later
+let featuresCollection = [];
 const typeSelect = document.getElementById('feature-type')
 
-let featuresCounter = 0
+let featureLength = 0
 
-function addInteractions() {
+function checkDraw () {
+  if (draw != 0) {
+    map.removeInteraction(draw)
+    draw = 0
+  }
+}
+
+map.on('click', () => {
+  if (draw != 0) {
+    if (featureLength - 1 === draw.sketchCoords_[0].length) {
+      featuresCollection.push(draw.sketchCoords_[0])
+      console.log(featuresCollection.length)
+      featureLength = 0
+    } else {
+      featureLength = draw.sketchCoords_[0].length
+    }
+  }
+})
+
+function addInteractions(getValue = false) {
   let geometryFunction
-  let value = typeSelect.value
-
-  if (typeSelect.value === 'Box') {
+  let value
+  if (getValue) {
+    value = getValue
+  } else {
+    value = typeSelect.value
+  }
+  console.log(getValue)
+  if (value === 'Box') {
     value = 'Circle'
     geometryFunction = createBox()
   } else if (value === 'Square') {
     value = 'Circle'
     geometryFunction = createRegularPolygon(4)
   }
-  console.log('new draw: ' + typeSelect.value)
-  const drawName = 'features_' + featuresCounter
+  console.log('new draw: ' + value)
+  const drawName = 'features_' + featuresCollection.length
   draw = new Draw({
     source: source,
     type: value,
+    //features: featuresCollection,
+    //layer: layers[0],
     geometryName: drawName,
     geometryFunction: geometryFunction
     //style: featureStyle
   })
   map.addInteraction(draw)
-  snap = new Snap({source: source})
-  map.addInteraction(snap)
-  console.log(draw.getOverlay().name)
+  //snap = new Snap({source: source})
+  //map.addInteraction(snap) 
+  
+  console.log('draw.getOverlay().name = ' + draw.getOverlay().name)
+  /*draw.on('drawend', function (event) {
+    var feature = event.feature;
+    var features = layers[0].getSource().getFeatures();
+    features = features.concat(feature);
+    features.forEach(element => console.log(element));
+  });*/
 }
+
 
 /**
  * Handle change event.
@@ -138,24 +173,46 @@ typeSelect.onchange = function () {
 };
 */
 
-let addFeature = document.getElementById('feature-btn')
+let addFeature = document.getElementById('button-upload')
 addFeature.onclick = ()=>{
-  addInteractions()
+  UploadFileGeoJSON()
 }
 
+let delDraw = document.getElementById('button-mouse')
+delDraw.onclick = () => {
+  checkDraw()
+  console.log('delete draw')
+}
+
+let drawPoint = document.getElementById('button-point')
+drawPoint.onclick = () => {
+  checkDraw()
+  addInteractions('Point')
+}
+
+let drawPoly = document.getElementById('button-polygon')
+drawPoly.onclick = () => {
+  checkDraw()
+  addInteractions('Polygon')
+}
+
+
+
+/*
 let endEnter = document.getElementById('feature-end-btn')
 endEnter.onclick = ()=>{
-  //console.log(draw.sketchCoords_[0][0])
-  draw.finishDrawing()
+  //console.log('fc: ' + typeof featuresCollection)
+  //draw.finishDrawing()
+  console.log(draw)
   map.removeInteraction(draw)
   console.log('delete draw')
-  map.removeInteraction(snap)
+  //map.removeInteraction(snap)
 }
 
 document.getElementById('feature-undo-btn').addEventListener('click', function () {
   //draw.abortDrawing()
   draw.removeLastPoint()
-})
+})*/
 
 
 // Selection

@@ -1,29 +1,53 @@
-* {
-    box-sizing: border-box;
-}
+:root {
+    --primColor: #f4f4f4d3;
+    --secoColor: #eed8cd;
+    --shadColor: #31032A;
+    --textColor: #1C1C1C;
+    --textButtonColor: #31032A;
+    --menuWidth: 24%;
+    --cornerRad: 4px;
+    --maxZindex: 2;
+  }
 
 body {
+    background-color: var(--primColor);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    color: var(--textColor);
     margin: 0;
     padding: 0;
 }
 
+
 .map {
-    /*position: absolute;*/
+    position: fixed;
+    display: inline;
     z-index: 0;
     height: 100%;
-    width: 100%;
+    width: calc(100% - var(--menuWidth));
+    right: 0;
 }
 
-#menu-bar{
+.menu-bar{
     position: fixed;
-    /*display: block;*/
-    right: 0;
-    z-index: 10;
+    display: inline-block;
+    left: 0;
+    z-index: var(--maxZindex)-1;
     top: 0;
     height: 100%;
-    width: 252px;
-    background-color: #8dafb9b4;
-    box-shadow: 8px 8px 4 #8dafb9b4 inset, -8px -8px 4 #8dafb9b4 inset;
+    width: var(--menuWidth);
+    background-color: var(--primColor);
+    /*box-shadow: 8px 8px 4 #8dafb9b4 inset, -8px -8px 4 #8dafb9b4 inset;*/
+}
+
+.layersBlock {
+    position: fixed;
+    display: inline-block;
+    z-index: var(--maxZindex)-1;
+    left: var(--menuWidth);
+    height: 100%;
+    margin: 8px; 
+    top: 52px;
 }
 
 .menu-item{
@@ -37,33 +61,184 @@ body {
     margin-top: 4px;
     margin-right: 4px;
     padding: 4px;
-    background-color: #62a3b7;
-    border: 2px solid rgba(21, 28, 23, 0.212);
+    background-color: var(--secoColor);
+    border: 1px solid var(--shadColor);
     /*border-radius: 5px;*/
-    color: black;
+    color: var(--textButtonColor);
 }
 .menu-button:hover {
-    box-shadow: 0 0 4px #0485ad;
-    -moz-box-shadow: 0 0 4px #0485ad;
-    -o-box-shadow: 0 0 4px #0485ad;
-    -ms-box-shadow: 0 0 4px #0485ad;
-    -webkit-box-shadow: 0 0 4px #0485ad;
+    box-shadow: 0 0 4px var(--shadColor);
+    -moz-box-shadow: 0 0 4px var(--shadColor);
+    -o-box-shadow: 0 0 4px var(--shadColor);
+    -ms-box-shadow: 0 0 4px var(--shadColor);
+    -webkit-box-shadow: 0 0 4px var(--shadColor);
 } 
 
 
 .menu-button-undo {
     /*display: flex;*/
     /*padding: 4px;*/
-    background-color: #d2e4ea;
-    border: 1px solid #0485ad;
-    border-color: #0485ad;
+    background-color: var(--secoColor);
+    border: 1px solid var(--shadColor);
+    border-color: var(--shadColor);
     /*border-radius: 4px;*/
-    color: black;
+    color: var(--textButtonColor);
 }
 .menu-button-undo:hover {
-    box-shadow: 0 0 4px #0485ad;
-    -moz-box-shadow: 0 0 4px #0485ad;
-    -o-box-shadow: 0 0 4px #0485ad;
-    -ms-box-shadow: 0 0 4px #0485ad;
-    -webkit-box-shadow: 0 0 4px #0485ad;
+    box-shadow: 0 0 4px var(--shadColor);
+    -moz-box-shadow: 0 0 4px var(--shadColor);
+    -o-box-shadow: 0 0 4px var(--shadColor);
+    -ms-box-shadow: 0 0 4px var(--shadColor);
+    -webkit-box-shadow: 0 0 4px var(--shadColor);
 } 
+
+/* Список слоев*/
+
+.layersBlock button {
+    display: block;
+    margin-top: 8px;
+    width: 26px;
+    height: 26px;
+    padding: 2px 2px;
+    background-color: var(--primColor);
+    border: 1px solid var(--secoColor);
+    border-radius: 2px;
+    color: var(--textColor);
+}
+
+#button-mouse {
+    background: url('https://www.svgrepo.com/show/379563/point.svg') no-repeat 0 0;
+    background-size: 97%; 
+    background-color: var(--primColor);
+}
+
+#button-point {
+    background: url('https://www.svgrepo.com/show/379433/git-commit.svg') no-repeat 0 0;
+    background-size: 95%; 
+    background-color: var(--primColor);
+}
+
+#button-polygon {
+    background: url('https://www.svgrepo.com/show/379627/shape-polygon.svg') no-repeat 0 0;
+    background-size: 95%; 
+    background-color: var(--primColor);
+}
+
+#button-upload {
+    background: url('https://www.svgrepo.com/show/379714/upload.svg') no-repeat 0 0;
+    background-size: 95%; 
+    background-color: var(--primColor);
+}
+
+summary {
+    margin-top: 8px;
+    text-align: center;
+    padding: 2px 2px;
+    width: 20px;
+    height: 20px;
+    background-color: var(--primColor);
+    border: 1px solid var(--secoColor);
+    border-radius: 2px;
+    color: var(--secoColor);
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    transition: transform 200ms ease-in-out 0s;
+}
+summary::before ,
+summary::after {
+    position: static;
+    content:"";
+}
+summary::before {
+    content: "";
+}
+summary::after {
+    position: static;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    content:"";
+    background: url('https://www.svgrepo.com/show/379485/layer-stack.svg') no-repeat 0 0;
+    background-size: 100%;
+}
+summary::marker {
+    font-size: 0;
+}
+summary::-webkit-details-marker {
+    display: none;
+}
+details[open] .layers {
+    margin-top: 4px;
+    animation-name: layersAnim;
+}
+details[open] summary::before {
+    content: "";
+}
+details[open] summary::after {
+    content: "";
+}
+.layers {
+    height: 0;
+    width: fit-content;
+    border-radius: 4px;
+    border: 1px solid var(--secoColor);
+    background-color: var(--primColor);
+    /*box-shadow: 0 4px 8px 0 var(--shadColor);*/
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    animation: closeMenu 300ms ease-in-out forwards;
+}
+.layers ul{
+    list-style-type: none;
+    padding: 0;
+    margin-top: 4px;
+}
+.layers li{
+    display: block;
+    color: var(--textColor);
+    padding: 8px 16px;
+    text-decoration: none;
+    text-align: left;
+    transition: filter 200ms linear 0s;
+}
+.layers li:hover {
+    background-color: var(--secoColor);
+    color: var(--textButtonColor);
+}
+
+.layers li:nth-of-type(1) {
+    padding-top: 4px;
+}
+.layers li:nth-last-of-type(1) {
+    border-bottom: none;
+}
+details[open]::before {
+  animation: fadeMe 300ms linear forwards;
+}
+@keyframes layersAnim {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 172px;
+    }
+}
+@keyframes fadeMe {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.4;
+    }
+}
+
+.layers a{
+    text-decoration: none;
+    color: var(--textColor);
+}
+.layers a:hover{
+    color: var(--textButtonColor)
+}

@@ -2,20 +2,56 @@
 <head>
     <meta charset='UTF-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>OpenLayers map</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1,user-scalable=no'>
+    <title>Interactive map</title>
     <link rel='stylesheet' href='./lib/v7.3.0-package/ol.css'>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
     <link rel='stylesheet' href='./styles.css'>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
     <!-- <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css'>
     <script src='https://unpkg.com/elm-pep'></script> -->
 </head>
 <body>
     <div id='js-map' class='map'> </div>
-    <div id='menu-bar'>
+    <div class='layersBlock'>
+        <button id='button-mouse' title='Clear mouse'></button>
+        <button id='button-point' title='Add points'></button>
+        <button id='button-polygon' title='Add polygons'></button>
+        <input type='file' id='upload-file' hidden='hidden'>
+        <button id='button-upload' title='Upload file .GeoJSON' onclick='UploadFileGeoJSON()'></button>
+        <details>
+            <summary title='Change layer'></summary>
+            <nav class='layers' >
+                <ul id='layers'>
+                    <li value='OSMVectorTileLayer'><a href='#'>Basic map</a></li>
+                    <li value='Aerial'><a href='#'>Aerial</a></li>
+                    <li value='AerialWithLabelsOnDemand'><a href='#'>Aerial with labels</a></li>
+                    <li value='RoadOnDemand'><a href='#'>Road</a></li>
+                    <li value='CanvasDark'><a href='#'>Road dark</a></li>
+                </ul>
+            </nav>
+        </details>
+        
+    </div>
+    <div class='menu-bar'>
+        <h3 class='menu-item' style='color: var(--textColor);'>Интерактивная карта</h3>
+        <hr>
+        <!--<div class='menu-item'>
+            Set the layer style
+            <select id='layer-select' >
+                <option value='OSMVectorTileLayer' selected>Basic map</option>
+                <option value='Aerial'>Aerial</option>
+                <option value='AerialWithLabelsOnDemand'>Aerial with labels</option>
+                <option value='RoadOnDemand'>Road</option>
+                <option value='CanvasDark'>Road dark</option>
+                <--<option value='OrdnanceSurvey'>Ordnance Survey</option>->
+            </select>
+        </div>
+        <hr>
         <div class='menu-item'>
             <input type='file' id='upload-file' hidden='hidden'>
             <button class='menu-button' id='upload-btn' onclick='UploadFileGeoJSON()'>Upload file .GeoJSON</button>
-            <!-- <span id='upload-text'></span> -->
+            <-- <span id='upload-text'></span> ->
         </div>
         <hr>
         <div class='menu-item'>
@@ -29,20 +65,20 @@
                     <select id='feature-type'>
                         <option value='Point'>Point</option>
                         <option value='LineString'>LineString</option>
-                        <option value="Square">Square</option>
+                        <option value='Square'>Square</option>
                         <option value='Box'>Box</option>
                         <option value='Polygon'>Polygon</option>
                         <option value='Circle'>Circle</option>
                     </select>
                     </form></td>
                 <td><button class='menu-button-undo'  id='feature-undo-btn'> Undo </button></td></tr>
-            </table>
+            </table>-->
             <form>
                 <input type='checkbox' id='modify' checked> Modify features <!---->
             </form>
-        </div>
+        <!--</div>-->
         <hr>
-        <div class='menu-item'>
+        <!-- <div class='menu-item'>
             <button class='menu-button' id='select-btn'> Select features </button>
             <form style='margin-top: 12px'>
                 <label for='select-type'>Type: &nbsp;</label>
@@ -52,14 +88,21 @@
                     <option value='singleselect-hover'>Single Select on hover</option>
                 </select>
             </form>
-        </div>
+        </div> -->
     </div>
     
     
 </body>
 </html>
-<script src='./lib/v7.3.0-package/dist/ol.js'></script>
-<!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
+<script>
+	// TO MAKE THE MAP APPEAR YOU MUST
+	// ADD YOUR ACCESS TOKEN FROM
+	// https://account.mapbox.com
+	mapboxgl.accessToken = 'pk.eyJ1IjoibmVydWJhc2hrYSIsImEiOiJjbGprNjQxaHQwaGtnM2NwZG9tMHB2MndkIn0.Rg0ur0e2gyMh38S9VnCp4g';
+    
+</script>
+<script src='lib/v7.3.0-package/dist/ol.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/elm-pep@1.0.6/dist/elm-pep.js'></script>
-<script src='./main.js'></script>
+<script src='main.js'></script>
 <script type='module' src='drawFeatures.js'></script>
+<!--<script type='module' src='satimages.js'></script>-->
