@@ -4,21 +4,23 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1,user-scalable=no'>
     <title>Interactive map</title>
+    <link rel='icon' href='./svg_files/favicon.svg' type='image/svg+xml'>
     <link rel='stylesheet' href='./lib/v7.3.0-package/ol.css'>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
     <link rel='stylesheet' href='./styles.css'>
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-    <!-- <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css'>
-    <script src='https://unpkg.com/elm-pep'></script> -->
 </head>
 <body>
     <div id='js-map' class='map'> </div>
     <div class='layersBlock'>
         <button id='button-mouse' title='Clear mouse'></button>
         <button id='button-point' title='Add points'></button>
+        <button id='button-linestring' title='Add lines'></button>
         <button id='button-polygon' title='Add polygons'></button>
+        <button id='button-move' title='Move objects'></button>
         <input type='file' id='upload-file' hidden='hidden'>
         <button id='button-upload' title='Upload file .GeoJSON' onclick='UploadFileGeoJSON()'></button>
+        <!--<button  id='button-download' title='Download objects'></button>-->
         <details>
             <summary title='Change layer'></summary>
             <nav class='layers' >
@@ -36,73 +38,64 @@
     <div class='menu-bar'>
         <h3 class='menu-item' style='color: var(--textColor);'>Интерактивная карта</h3>
         <hr>
-        <!--<div class='menu-item'>
-            Set the layer style
-            <select id='layer-select' >
-                <option value='OSMVectorTileLayer' selected>Basic map</option>
-                <option value='Aerial'>Aerial</option>
-                <option value='AerialWithLabelsOnDemand'>Aerial with labels</option>
-                <option value='RoadOnDemand'>Road</option>
-                <option value='CanvasDark'>Road dark</option>
-                <--<option value='OrdnanceSurvey'>Ordnance Survey</option>->
+        <div class='menu-item'>
+            <label class='checkbox'>
+                Modify features
+                <input type='checkbox' id='modify' >
+                <span class='checkbox-switch' ></span>
+            </label>
+            <!--
+            <label class='checkbox' style='margin-top: 8px'>
+                Multiple selection
+                <input type='checkbox' id='multiSelect' >
+                <span class='checkbox-switch' ></span>
+            </label>
+            -->
+        </div>
+        <hr>
+        <div class='menu-item features-select'>
+            <select id='features-list'>
+                <option value='No features'>No features</option>
             </select>
+            <button class='menu-button' id='feature-select'>Select</button>
         </div>
         <hr>
-        <div class='menu-item'>
-            <input type='file' id='upload-file' hidden='hidden'>
-            <button class='menu-button' id='upload-btn' onclick='UploadFileGeoJSON()'>Upload file .GeoJSON</button>
-            <-- <span id='upload-text'></span> ->
+        <div class='menu-item fileName'>
+            <label>Enter name for export file</label>
+            <input type='text' required id='file-name'/>
+            <button class='menu-button' id='button-download' style='margin-top: 4px;' disabled> Download </button>
         </div>
-        <hr>
-        <div class='menu-item'>
-            <table>
-            <tr><td><button class='menu-button' id='feature-btn'> Draw new figure </button></td>
-                <td><button class='menu-button' id='feature-end-btn'> Finish </button></td></tr>
-            </table>
-            <table style='margin-top: -12px; margin-bottom: -12px'>
-            <tr><td><form>
-                    <label for='feature-type'><br> Type:&nbsp;</label>
-                    <select id='feature-type'>
-                        <option value='Point'>Point</option>
-                        <option value='LineString'>LineString</option>
-                        <option value='Square'>Square</option>
-                        <option value='Box'>Box</option>
-                        <option value='Polygon'>Polygon</option>
-                        <option value='Circle'>Circle</option>
-                    </select>
-                    </form></td>
-                <td><button class='menu-button-undo'  id='feature-undo-btn'> Undo </button></td></tr>
-            </table>-->
-            <form>
-                <input type='checkbox' id='modify' checked> Modify features <!---->
-            </form>
-        <!--</div>-->
-        <hr>
-        <!-- <div class='menu-item'>
-            <button class='menu-button' id='select-btn'> Select features </button>
-            <form style='margin-top: 12px'>
-                <label for='select-type'>Type: &nbsp;</label>
-                <select id='select-type'>
-                    <option value='singleselect' selected>Single Select</option>
-                    <option value='multiselect'>Multi Select</option>
-                    <option value='singleselect-hover'>Single Select on hover</option>
-                </select>
-            </form>
-        </div> -->
+        
+        <div class='menu-item log'>
+            Console messages
+            <hr>
+            <pre id='log'></pre>
+            <button id='clearLogButton'>Clear</button>
+        </div>
+        
     </div>
     
     
 </body>
 </html>
 <script>
-	// TO MAKE THE MAP APPEAR YOU MUST
-	// ADD YOUR ACCESS TOKEN FROM
-	// https://account.mapbox.com
-	mapboxgl.accessToken = 'pk.eyJ1IjoibmVydWJhc2hrYSIsImEiOiJjbGprNjQxaHQwaGtnM2NwZG9tMHB2MndkIn0.Rg0ur0e2gyMh38S9VnCp4g';
-    
+mapboxgl.accessToken = 'pk.eyJ1IjoibmVydWJhc2hrYSIsImEiOiJjbGprNjQxaHQwaGtnM2NwZG9tMHB2MndkIn0.Rg0ur0e2gyMh38S9VnCp4g'
 </script>
+
+<script src='node_modules/jquery/dist/jquery.min.js' type='text/javascript'></script>
 <script src='lib/v7.3.0-package/dist/ol.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/elm-pep@1.0.6/dist/elm-pep.js'></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/proj4js/1.1.0/proj4js-compressed.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>
+    <script type="text/javascript">
+      Proj4js.Datum["potsdam"] = {towgs84: "598.1,73.7,418.2,0.202,0.045,-2.455,6.7", ellipse: "bessel", datumName: "Potsdam Rauenberg 1950 DHDN"}
+      Proj4js.defs["EPSG:31466"] = "+proj=tmerc +lat_0=0 +lon_0=6 +k=1 +x_0=2500000 +y_0=0 +ellps=bessel +towgs84=598.1,73.7,418.2,0.202,0.045,-2.455,6.7 +units=m +no_defs"
+      var proj_wgs84 = new OpenLayers.Projection("EPSG:4326")
+      var proj_31466 = new OpenLayers.Projection("EPSG:31466")
+      var point = new OpenLayers.LonLat(2769212.70, 5678724.61)
+      var new_point= point.clone().transform(proj_31466, proj_wgs84)
+    </script>
+<script type="text/javascript" src='node_modules/geojson/geojson.min.js'></script>
 <script src='main.js'></script>
 <script type='module' src='drawFeatures.js'></script>
 <!--<script type='module' src='satimages.js'></script>-->

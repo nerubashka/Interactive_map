@@ -1,3 +1,8 @@
 {
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5501,
+    "javascript.preferences.quoteStyle": "single",
+    "typescript.preferences.quoteStyle": "single",
+    "html.completion.attributeDefaultValue": "singlequotes",
+    "prettier.jsxSingleQuote": true,
+    "prettier.singleQuote": true
 }

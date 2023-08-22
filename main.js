@@ -1,7 +1,35 @@
-//import BingMaps from 'ol/source/BingMaps.js';
-//import Map from 'ol/Map.js';
-//import TileLayer from 'ol/layer/Tile.js';
-//import View from 'ol/View.js';
+
+(function () {
+    var logger = document.getElementById('log')
+    console.log = function () {
+      for (var i = 0; i < arguments.length; i++) {
+        if (typeof arguments[i] === 'object') {
+            logger.innerHTML += (JSON && JSON.stringify ? JSON.stringify(arguments[i], undefined, 2) : arguments[i]) + '<br />'
+        } else {
+            logger.innerHTML += arguments[i] + '<br />'
+        }
+      }
+    }
+})()
+
+let butClear = document.getElementById('clearLogButton')
+butClear.onclick = () => {
+    $('#log').text('')
+}
+
+/*
+if (document.addEventListener) {
+    document.addEventListener('contextmenu', function(e) {
+      alert("You've tried to open context menu"); //here you draw your own menu
+      e.preventDefault();
+    }, false);
+  } else {
+    document.attachEvent('oncontextmenu', function() {
+      alert("You've tried to open context menu");
+      window.event.returnValue = false;
+    });
+  }
+*/
 
 const layers = [[], [], []] //['ol'], ['vector'], ['raster']
 
@@ -17,17 +45,18 @@ layers[0].push(
     new ol.layer.Tile({
         visible: true,
         preload: Infinity,
+        name: styles[0],
         source: new ol.source.OSM(),
-        title: 'OSM VectorTileLayer',
     })
 )
 
-let i, ii;
+let i, ii
 for (i = 1, ii = styles.length; i < ii; ++i) {
     layers[0].push(
       new ol.layer.Tile({
         visible: false,
         preload: Infinity,
+        name: styles[i],
         source: new ol.source.BingMaps({
           key: 'Aj1wlFu3oQesdVRbVqRCya26QH4JFMroG6Krq8IiHhTDou2IOMVE7Rh2KbghTfSf',
           imagerySet: styles[i],
@@ -35,6 +64,7 @@ for (i = 1, ii = styles.length; i < ii; ++i) {
       })
     )
 }
+//layers[0][styles.length-1].values_.visible = true
 
 // ------------------------------------------------------------
 
@@ -114,13 +144,13 @@ const map = new ol.Map({
 })*/
 
 // add Vector Layers
-function addVectorGeoJSON(fileName) {
+function addVectorGeoJSON(fileUrl) {
     fileUrl = './data/' + fileName
     layerTitle = fileName.split('.')[0]
     const layerGeoJSON = new ol.layer.VectorImage({
         source: new ol.source.Vector ({
             url: fileUrl,
-            format: new ol.format.GeoJSON()
+            format: new ol.format.GeoJSON({featureProjection: 'EPSG:4326'})
         }),
         visible: true,
         title: layerTitle
@@ -135,8 +165,7 @@ uploadFile.addEventListener('change', ()=>{
         fileName = uploadFile.value.match(/[\/\\]([\w\d\s\.\-(\)]+)$/)[1]
         addVectorGeoJSON(fileName)
         console.log(fileName + ' loaded')
-        console.log(uploadFile)
-    }else {
+    } else {
         console.log('File not selected')
 
     }

@@ -3,7 +3,9 @@ import Draw, {createBox, createRegularPolygon,} from 'ol/interaction/Draw.js';
 import {Vector as VectorSource} from 'ol/source.js'
 import {Vector as VectorLayer} from 'ol/layer.js'
 // select
-import {Fill, Stroke, Style} from 'ol/style.js';
+import {Circle, Fill, Stroke, Style} from 'ol/style.js';
+import {Select, Translate} from 'ol/interaction.js';
+
 /*
 import MVT from 'ol/format/MVT.js';
 import VectorTileLayer from 'ol/layer/VectorTile.js';
@@ -11,43 +13,70 @@ import VectorTileSource from 'ol/source/VectorTile.js';
 import View from 'ol/View.js';
 import {Fill, Stroke, Style} from 'ol/style.js';*/
 
-/*
-//translate
-import {Select, Translate, defaults as defaultInteractions,} from 'ol/interaction.js';
-
-const select = new Select()
-const translate = new Translate({
-  features: select.getFeatures(),
-})
-
-function addInteractions() {
-  add = defaultInteractions().extend([select, translate])
-  map.addInteraction(add)
-}
-addInteractions()
-*/
-
-// lookup for selection objects
-//let selection = {}
+let draw = 0 // global so we can remove them later
+let features = []
+let translate = 0
+let mSelect = false
+const fColor = '#fa9868'
+const sColor = '#31032A'
 
 const featureStyle = new Style({
   stroke: new Stroke({
-  color: '#3499CC',
-  width: 1.5,
+    color: sColor,
+    width: 1.5,
   }),
   fill: new Fill({
-      color: 'rgba(255, 255, 255, 0.5)',
+    color: fColor+'50',
   }),
-  });
-  const selectedFeature = new Style({
-  stroke: new Stroke({
-      color: '#3499CC',
-      width: 2,
-  }),
-  fill: new Fill({
-      color: 'rgb(52, 153, 204, 0.5)',
+  image: new Circle({
+    radius: 5,
+    fill: new Fill({
+      color: fColor,
+    })
   }),
 })
+
+const selectedFeatureStyle = new Style({
+  stroke: new Stroke({
+    color: sColor,
+    width: 4,
+  }),
+  fill: new Fill({
+    color: sColor+'50',
+  }),
+  image: new Circle({
+    radius: 7,
+    fill: new Fill({
+      color: sColor,
+    }),
+  }),
+})
+
+let source = new VectorSource()
+const vector = new VectorLayer({
+  source: source,
+  style: featureStyle,
+  name: 'VectorLayer'
+})
+layers[1].push(vector)
+map.addLayer(vector)
+
+
+let select = new Select({
+  style: selectedFeatureStyle
+})
+map.addInteraction(select)
+select.setActive(true)
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+map.on('click', async function () {
+  await sleep(300)
+  document.getElementById('button-download').disabled = (select.getFeatures().getLength() === 0)
+})
+
 /*
 const vtSource = new VectorTileSource({
     //maxZoom: 15,
@@ -64,66 +93,8 @@ const vtLayer  = new VectorTileLayer({
 map.addLayer(vtLayer)
 */
 
-let source = new VectorSource()
-const vector = new VectorLayer({
-  source: source,
-  style: {
-    'fill-color': 'rgba(255, 255, 255, 0.5)',
-    'stroke-color': '#3499CC',
-    'stroke-width': 1.5,
-    'circle-radius': 7,
-    'circle-fill-color': '#ffcc33',
-  },
-  name: 'VectorLayer'
-})
-layers[1].push(vector)
-map.addLayer(vector)
-
-// Изменять полигоны
-let modifyCheck = true
-const modify = new Modify({source: source})
-const modifyChange = document.getElementById('modify')
-modifyChange.addEventListener('change', ()=>{
-  modifyCheck = !modifyCheck
-  
-  if (modifyCheck){
-    console.log('modify on')
-    map.addInteraction(modify)
-  }else{
-    console.log('modify off')
-    map.removeInteraction(modify)
-  }
-  
-})
-
-map.addInteraction(modify)
-
-let draw = 0, snap; // global so we can remove them later
-let featuresCollection = [];
 const typeSelect = document.getElementById('feature-type')
-
-let featureLength = 0
-
-function checkDraw () {
-  if (draw != 0) {
-    map.removeInteraction(draw)
-    draw = 0
-  }
-}
-
-map.on('click', () => {
-  if (draw != 0) {
-    if (featureLength - 1 === draw.sketchCoords_[0].length) {
-      featuresCollection.push(draw.sketchCoords_[0])
-      console.log(featuresCollection.length)
-      featureLength = 0
-    } else {
-      featureLength = draw.sketchCoords_[0].length
-    }
-  }
-})
-
-function addInteractions(getValue = false) {
+function addDraw(getValue = false) {
   let geometryFunction
   let value
   if (getValue) {
@@ -131,7 +102,7 @@ function addInteractions(getValue = false) {
   } else {
     value = typeSelect.value
   }
-  console.log(getValue)
+  getValue = value
   if (value === 'Box') {
     value = 'Circle'
     geometryFunction = createBox()
@@ -139,64 +110,159 @@ function addInteractions(getValue = false) {
     value = 'Circle'
     geometryFunction = createRegularPolygon(4)
   }
-  console.log('new draw: ' + value)
-  const drawName = 'features_' + featuresCollection.length
+  console.log('Новая фигура: ' + value)
   draw = new Draw({
     source: source,
     type: value,
-    //features: featuresCollection,
-    //layer: layers[0],
-    geometryName: drawName,
-    geometryFunction: geometryFunction
-    //style: featureStyle
+    style: featureStyle,
+    geometryFunction: geometryFunction,
+    name: 'default',
   })
   map.addInteraction(draw)
-  //snap = new Snap({source: source})
-  //map.addInteraction(snap) 
-  
-  console.log('draw.getOverlay().name = ' + draw.getOverlay().name)
-  /*draw.on('drawend', function (event) {
-    var feature = event.feature;
-    var features = layers[0].getSource().getFeatures();
-    features = features.concat(feature);
-    features.forEach(element => console.log(element));
-  });*/
+  draw.on("drawend",function(e){
+    let newFeature = e.feature
+    newFeature.geometryName = getValue + '_' + features.length
+    features.push(e.feature)
+    console.log('Создано фигур: ' + features.length)
+    featuresList()
+  })
 }
 
-
-/**
- * Handle change event.
-typeSelect.onchange = function () {
-  map.removeInteraction(draw)
-  map.removeInteraction(snap)
-  //addInteractions()
-};
-*/
+function featuresList () {
+  let options = ''
+  for (let i = 0; i < features.length; i++) {
+    options += '<option value="' + features[i].geometryName+ '">' + features[i].geometryName + '</option>'
+  }
+  $("#features-list").html(options);
+}
 
 let addFeature = document.getElementById('button-upload')
 addFeature.onclick = ()=>{
   UploadFileGeoJSON()
 }
 
+function cleanMouse () {
+  map.removeInteraction(draw)
+  map.removeInteraction(translate)
+  select.getFeatures().clear()
+  select.setActive(false)
+  draw = 0
+  translate = 0
+}
+
 let delDraw = document.getElementById('button-mouse')
 delDraw.onclick = () => {
-  checkDraw()
-  console.log('delete draw')
+  cleanMouse()
+  select.setActive(true)
 }
 
 let drawPoint = document.getElementById('button-point')
 drawPoint.onclick = () => {
-  checkDraw()
-  addInteractions('Point')
+  cleanMouse()
+  addDraw('Point')
+}
+
+let drawLineString = document.getElementById('button-linestring')
+drawLineString.onclick = () => {
+  cleanMouse()
+  addDraw('LineString')
 }
 
 let drawPoly = document.getElementById('button-polygon')
 drawPoly.onclick = () => {
-  checkDraw()
-  addInteractions('Polygon')
+  cleanMouse()
+  addDraw('Polygon')
+}
+
+let drawMove = document.getElementById('button-move')
+drawMove.onclick = () => {
+  cleanMouse()
+  translate = new Translate()
+  map.addInteraction(translate)
+}
+
+let selectFeature = document.getElementById('feature-select') 
+selectFeature.onclick = () => {
+  const selectOption = document.getElementById('features-list')
+  const option = selectOption.querySelector(`option[value="${selectOption.value}"]`)
+  const feature = features.find(el => el.geometryName  === option.value)
+  select.getFeatures().clear()
+  select.getFeatures().push(feature)
+  document.getElementById('button-download').disabled = false
+  select.setActive(true)
 }
 
 
+
+
+// Сохранение файлов в geojson
+
+function makeGeojsonFile (data) {
+  var source = new Proj4js.Proj('EPSG:4326'); // lon\lat
+  var dest = new Proj4js.Proj('EPSG:3785'); //x\y
+  let coords = []
+  let point, x, y
+  for (let i = 0; i < data.length; i += 2) {
+    x = data[i]
+    y = data[i+1]
+    point = Proj4js.transform(dest, source, new Proj4js.Point(x, y))
+    coords.push([point.x, point.y])
+  }
+  const geoData = [
+    {
+      polygon: [coords]
+    }
+  ]
+  return( JSON.stringify(GeoJSON.parse( geoData, {'Polygon': 'polygon'} )) )
+}
+
+let drawSave = document.getElementById('button-download')
+drawSave.onclick = () => {
+  if (select.getFeatures().getLength() != 0) {
+    $('input[required]').addClass('req')
+    const feature = select.getFeatures().getArray()[0].values_.geometry
+    if ($('input[required]').val() != '') {
+      const fileName = $('input[required]').val() + '.geojson'
+      
+      const geojson = makeGeojsonFile(feature.flatCoordinates)
+      const a = document.createElement('a')
+      const file = new Blob([geojson], { type: 'text/plain'})
+      a.href = window.URL.createObjectURL(file)
+      a.download = fileName
+      a.click()
+      window.URL.revokeObjectURL(a.href)
+      a.remove()
+      $('input[required]').removeClass('req')
+      $('input[required]').val('')
+      delDraw.onclick()
+      document.getElementById('button-download').disabled = true
+    } else {
+      console.log('Введите имя файла')
+    }
+  } else {
+    console.log('Выберите объект для сохранения')
+  }
+}
+
+// Изменять полигоны
+const modify = new Modify({source: source})
+const modifyChange = document.getElementById('modify')
+modifyChange.addEventListener('change', ()=>{
+  if (modifyChange.checked){
+    console.log('modify on')
+    map.addInteraction(modify)
+  } else {
+    console.log('modify off')
+    map.removeInteraction(modify)
+  }
+})
+/*
+const multiSelect = document.getElementById('multiSelect')
+multiSelect.addEventListener('change', ()=>{
+  select.multi_ = multiSelect.checked
+  mSelect = multiSelect.checked
+  console.log('multiple selection ', select)
+})*/
 
 /*
 let endEnter = document.getElementById('feature-end-btn')

@@ -1,6 +1,6 @@
 :root {
     --primColor: #f4f4f4d3;
-    --secoColor: #eed8cd;
+    --secoColor: #fa9868;
     --shadColor: #31032A;
     --textColor: #1C1C1C;
     --textButtonColor: #31032A;
@@ -18,7 +18,7 @@ body {
     padding: 0;
 }
 
-
+/*Основное меню---------------------------------------------------------*/
 .map {
     position: fixed;
     display: inline;
@@ -37,7 +37,6 @@ body {
     height: 100%;
     width: var(--menuWidth);
     background-color: var(--primColor);
-    /*box-shadow: 8px 8px 4 #8dafb9b4 inset, -8px -8px 4 #8dafb9b4 inset;*/
 }
 
 .layersBlock {
@@ -50,6 +49,18 @@ body {
     top: 52px;
 }
 
+.log {
+    position: fixed;
+    height: 50%;
+    width: calc(var(--menuWidth) - 36px);
+    bottom: 0;
+}
+.log button {
+    position: fixed;
+    bottom: 12px;
+}
+
+/*Боковое меню---------------------------------------------------------*/
 .menu-item{
     margin-top: 8px;
     margin-bottom: 8px;
@@ -58,12 +69,11 @@ body {
 }
 
 .menu-button{
-    margin-top: 4px;
     margin-right: 4px;
     padding: 4px;
     background-color: var(--secoColor);
     border: 1px solid var(--shadColor);
-    /*border-radius: 5px;*/
+    border-radius: 4px;
     color: var(--textButtonColor);
 }
 .menu-button:hover {
@@ -73,15 +83,18 @@ body {
     -ms-box-shadow: 0 0 4px var(--shadColor);
     -webkit-box-shadow: 0 0 4px var(--shadColor);
 } 
+.menu-button:disabled {
+    background-color: var(--primColor);
+    counter-reset: var(--textColor);
+    box-shadow: none;
+}
 
 
+/*
 .menu-button-undo {
-    /*display: flex;*/
-    /*padding: 4px;*/
     background-color: var(--secoColor);
     border: 1px solid var(--shadColor);
     border-color: var(--shadColor);
-    /*border-radius: 4px;*/
     color: var(--textButtonColor);
 }
 .menu-button-undo:hover {
@@ -90,9 +103,114 @@ body {
     -o-box-shadow: 0 0 4px var(--shadColor);
     -ms-box-shadow: 0 0 4px var(--shadColor);
     -webkit-box-shadow: 0 0 4px var(--shadColor);
-} 
+} */
 
-/* Список слоев*/
+.checkbox {
+    position: relative;
+    display: flex;
+    margin: 0;
+}
+.checkbox-switch {
+	position: relative;	
+	display: inline-block;
+	box-sizing: border-box;	
+	margin-left: auto;		
+	width: 52px;	
+	height: 24px;
+	border: 1px solid var(--primColor);
+	border-radius: 25%/50%;	
+	vertical-align: top;
+	background: #eee;
+	transition: .2s;
+}
+.checkbox-switch:before {
+	content: '';
+	position: absolute;
+	top: 1px;
+	left: 1px;	
+	display: inline-block;
+	width: 20px;	
+	height: 20px;
+	border-radius: 50%;
+	background: var(--secoColor);
+	box-shadow: 0 3px 5px rgba(0, 0, 0, .3);
+	transition: .15s;
+}
+
+.checkbox input[type=checkbox] {
+	display: block;	
+	width: 0;
+	height: 0;	
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+}
+.checkbox input[type=checkbox]:not(:disabled):active + .checkbox-switch:before {
+	box-shadow: inset 0 0 2px rgba(0, 0, 0, .3);
+}
+.checkbox input[type=checkbox]:checked + .checkbox-switch {
+	background: var(--shadColor);
+}
+.checkbox input[type=checkbox]:checked + .checkbox-switch:before {
+	transform:translateX(28px);
+}
+ 
+/* Hover */
+.checkbox input[type="checkbox"]:not(:disabled) + .checkbox-switch {
+	cursor: pointer;
+	border-color: rgba(0, 0, 0, .3);
+}
+ 
+/* Disabled */
+.checkbox input[type=checkbox]:disabled + .checkbox-switch {
+	filter: grayscale(70%);
+	border-color: rgba(0, 0, 0, .1);
+}
+.checkbox input[type=checkbox]:disabled + .checkbox-switch:before {
+	background: var(--primColor);
+}
+
+
+.fileName.req:invalid {
+    border: 2px solid var(--shadColor);
+    background-color: var(--secoColor);
+}
+.fileName .req:valid {
+    border: 1px solid var(--textColor);
+}
+.fileName label {
+    color: var(--textColor);
+    display: block;
+}
+.fileName input {
+    display: block;
+    border: 1px solid var(--textColor);
+    color: var(--textColor);
+    padding: 7px 7px 8px;
+    margin-top: 8px;
+    width: 100%;
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+}
+.fileName input:focus {
+    outline: none;
+    border-color: var(--secoColor);
+}
+
+.features-select {
+    display: flex;
+}
+.features-select select {
+    width: 70%;
+}
+.features-select button {
+    width: 25%;
+    margin-left: auto;
+}
+
+/*Кнопочное меню---------------------------------------------------------*/
+/*https://www.svgrepo.com/collection/zwicon-line-icons/*/
 
 .layersBlock button {
     display: block;
@@ -107,29 +225,48 @@ body {
 }
 
 #button-mouse {
-    background: url('https://www.svgrepo.com/show/379563/point.svg') no-repeat 0 0;
-    background-size: 97%; 
+    background: url('./svg_files/mouse.svg') no-repeat 0 0;
+    background-size: 80%; 
+    background-position: 3px;
     background-color: var(--primColor);
 }
 
 #button-point {
-    background: url('https://www.svgrepo.com/show/379433/git-commit.svg') no-repeat 0 0;
+    background: url('./svg_files/point.svg') no-repeat 0 0;
+    background-size: 95%; 
+    background-color: var(--primColor);
+}
+
+#button-linestring {
+    background: url('./svg_files/linestring.svg') no-repeat 0 0;
     background-size: 95%; 
     background-color: var(--primColor);
 }
 
 #button-polygon {
-    background: url('https://www.svgrepo.com/show/379627/shape-polygon.svg') no-repeat 0 0;
+    background: url('./svg_files/polygon.svg') no-repeat 0 0;
+    background-size: 95%; 
+    background-color: var(--primColor);
+}
+
+#button-move {
+    background: url('./svg_files/move.svg') no-repeat 0 0;
     background-size: 95%; 
     background-color: var(--primColor);
 }
 
 #button-upload {
-    background: url('https://www.svgrepo.com/show/379714/upload.svg') no-repeat 0 0;
+    background: url('./svg_files/upload.svg') no-repeat 0 0;
     background-size: 95%; 
     background-color: var(--primColor);
 }
-
+/*
+#button-download {
+    background: url('https://www.svgrepo.com/show/379357/download.svg') no-repeat 0 0;
+    background-size: 95%; 
+    background-color: var(--primColor);
+}
+*/
 summary {
     margin-top: 8px;
     text-align: center;
@@ -159,7 +296,7 @@ summary::after {
     width: 20px;
     height: 20px;
     content:"";
-    background: url('https://www.svgrepo.com/show/379485/layer-stack.svg') no-repeat 0 0;
+    background: url('./svg_files/layers.svg') no-repeat 0 0;
     background-size: 100%;
 }
 summary::marker {
@@ -207,6 +344,15 @@ details[open] summary::after {
 .layers li:hover {
     background-color: var(--secoColor);
     color: var(--textButtonColor);
+}
+.layers li:active{
+    background-color: var(--shadColor);
+}
+.layers li a {
+    display: block;
+}
+.layers li a:active{
+    color: var(--secoColor);
 }
 
 .layers li:nth-of-type(1) {
