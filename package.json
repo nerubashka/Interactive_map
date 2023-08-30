@@ -1,10 +1,14 @@
 {
     "name": "my-interactive-map",
+    "main": "main.js",
     "description": "Interactive map with features for adding polygons and overlaying images",
     "dependencies": {
         "geojson": "^0.5.0",
         "jquery": "^3.7.0",
-        "ol": "^7.4.0",
+        "lodash": "^4.17.21",
+        "ol": "^7.5.1",
+        "ol-ext": "^4.0.11",
+        "openlayers-ext": "^3.1.5",
         "proj4": "^2.9.0",
         "proj4js": "^10.0.0"
     },

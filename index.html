@@ -5,97 +5,124 @@
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1,user-scalable=no'>
     <title>Interactive map</title>
     <link rel='icon' href='./svg_files/favicon.svg' type='image/svg+xml'>
-    <link rel='stylesheet' href='./lib/v7.3.0-package/ol.css'>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
-    <link rel='stylesheet' href='./styles.css'>
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <style>
+        body {
+            background-color: #f4f4f4d3;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            color: #1C1C1C;
+            margin: 0;
+            padding: 5% 0;
+        }
+        section {
+            width: 50%; 
+            height: 80%;
+            padding: 40px 80px;
+            margin: auto auto; 
+            background-color: white;
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            top: 20px;
+        }
+        .glow-on-hover {
+            width: 220px;
+            height: 50px;
+            border: none;
+            outline: none;
+            color: #1C1C1C;
+            background: #f4f4f4d3;
+            cursor: pointer;
+            position: relative;
+            z-index: 0;
+            border-radius: 10px;
+        }
+
+        .glow-on-hover:before {
+            content: '';
+            background: linear-gradient(45deg, #bf0d3e, #ff8142,#ee5340, #3c1053, #bf0d3e);
+            position: absolute;
+            top: -2px;
+            left:-2px;
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 15s linear infinite;
+            opacity: 0;
+            transition: opacity .3s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .glow-on-hover:active {
+            color: #f4f4f4d3
+        }
+
+        .glow-on-hover:active:after {
+            background: transparent;
+        }
+
+        .glow-on-hover:hover:before {
+            opacity: 1;
+        }
+
+        .glow-on-hover:after {
+            z-index: -1;
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #f4f4f4d3;
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+        }
+
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+
+        table {
+            width: 100%;
+            border: none;
+            margin-top: 60px;
+            margin-bottom: 0px;
+        }
+        table tbody td {
+            padding: 10px;
+            font-size: 14px;
+            line-height: 20px;
+            border-top: 1px solid #ee5340;
+        }
+    </style>
 </head>
 <body>
-    <div id='js-map' class='map'> </div>
-    <div class='layersBlock'>
-        <button id='button-mouse' title='Clear mouse'></button>
-        <button id='button-point' title='Add points'></button>
-        <button id='button-linestring' title='Add lines'></button>
-        <button id='button-polygon' title='Add polygons'></button>
-        <button id='button-move' title='Move objects'></button>
-        <input type='file' id='upload-file' hidden='hidden'>
-        <button id='button-upload' title='Upload file .GeoJSON' onclick='UploadFileGeoJSON()'></button>
-        <!--<button  id='button-download' title='Download objects'></button>-->
-        <details>
-            <summary title='Change layer'></summary>
-            <nav class='layers' >
-                <ul id='layers'>
-                    <li value='OSMVectorTileLayer'><a href='#'>Basic map</a></li>
-                    <li value='Aerial'><a href='#'>Aerial</a></li>
-                    <li value='AerialWithLabelsOnDemand'><a href='#'>Aerial with labels</a></li>
-                    <li value='RoadOnDemand'><a href='#'>Road</a></li>
-                    <li value='CanvasDark'><a href='#'>Road dark</a></li>
-                </ul>
-            </nav>
-        </details>
-        
-    </div>
-    <div class='menu-bar'>
-        <h3 class='menu-item' style='color: var(--textColor);'>Интерактивная карта</h3>
-        <hr>
-        <div class='menu-item'>
-            <label class='checkbox'>
-                Modify features
-                <input type='checkbox' id='modify' >
-                <span class='checkbox-switch' ></span>
-            </label>
-            <!--
-            <label class='checkbox' style='margin-top: 8px'>
-                Multiple selection
-                <input type='checkbox' id='multiSelect' >
-                <span class='checkbox-switch' ></span>
-            </label>
-            -->
-        </div>
-        <hr>
-        <div class='menu-item features-select'>
-            <select id='features-list'>
-                <option value='No features'>No features</option>
-            </select>
-            <button class='menu-button' id='feature-select'>Select</button>
-        </div>
-        <hr>
-        <div class='menu-item fileName'>
-            <label>Enter name for export file</label>
-            <input type='text' required id='file-name'/>
-            <button class='menu-button' id='button-download' style='margin-top: 4px;' disabled> Download </button>
-        </div>
-        
-        <div class='menu-item log'>
-            Console messages
-            <hr>
-            <pre id='log'></pre>
-            <button id='clearLogButton'>Clear</button>
-        </div>
-        
-    </div>
-    
-    
+    <section>
+        <h1>
+            Курсовой проект на тему<br/>
+            &laquo;Разработка интерактивной карты для работы 
+            со спутниковыми снимками &raquo;
+        </h1>
+        <table>
+            <tr>
+                <td style='background-color: #3c105320'>Выполнила:</td>
+                <td style='background-color: #ee534020'>Нерубацкая Анастасия Ильинична, студентка 5 курса специалитета</td>
+            </tr>
+            <tr>
+                <td style='background-color: #3c105320'>Научный руководитель:</td>
+                <td style='background-color: #ee534020'>Сазонова Софья Викторовна, кандидат физико-математических наук</td>
+            </tr>
+            <tr>
+                <td style='background-color: #3c105320'>Образовательная организация:</td>
+                <td style='background-color: #ee534020'>факультет космических исследований МГУ имени М.В. Ломоносова</td>
+            </tr>
+            <tr><td></td><td></td></tr>
+        </table>
+        <form action='intMap.html' target='_self'>
+        <button class='glow-on-hover' style='position: relative; margin: 40px 37%;'>Переход к карте</button>
+    </section>
 </body>
-</html>
-<script>
-mapboxgl.accessToken = 'pk.eyJ1IjoibmVydWJhc2hrYSIsImEiOiJjbGprNjQxaHQwaGtnM2NwZG9tMHB2MndkIn0.Rg0ur0e2gyMh38S9VnCp4g'
-</script>
-
-<script src='node_modules/jquery/dist/jquery.min.js' type='text/javascript'></script>
-<script src='lib/v7.3.0-package/dist/ol.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/elm-pep@1.0.6/dist/elm-pep.js'></script>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/proj4js/1.1.0/proj4js-compressed.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>
-    <script type="text/javascript">
-      Proj4js.Datum["potsdam"] = {towgs84: "598.1,73.7,418.2,0.202,0.045,-2.455,6.7", ellipse: "bessel", datumName: "Potsdam Rauenberg 1950 DHDN"}
-      Proj4js.defs["EPSG:31466"] = "+proj=tmerc +lat_0=0 +lon_0=6 +k=1 +x_0=2500000 +y_0=0 +ellps=bessel +towgs84=598.1,73.7,418.2,0.202,0.045,-2.455,6.7 +units=m +no_defs"
-      var proj_wgs84 = new OpenLayers.Projection("EPSG:4326")
-      var proj_31466 = new OpenLayers.Projection("EPSG:31466")
-      var point = new OpenLayers.LonLat(2769212.70, 5678724.61)
-      var new_point= point.clone().transform(proj_31466, proj_wgs84)
-    </script>
-<script type="text/javascript" src='node_modules/geojson/geojson.min.js'></script>
-<script src='main.js'></script>
-<script type='module' src='drawFeatures.js'></script>
-<!--<script type='module' src='satimages.js'></script>-->
