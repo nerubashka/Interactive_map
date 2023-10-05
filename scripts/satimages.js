@@ -45,7 +45,6 @@ function ImagesList () {
       options += '<option value="' + mapSave.images[i].name + '">' + mapSave.images[i].name + '</option>'
     }
   }
-
   $('#images-list').html(options)
 }
 
@@ -89,7 +88,9 @@ fullSize.onclick = () => {
   const extent = feature.values_.geometry.extent_
   const scaleX = Math.abs((extent[2] - extent[0]) / crop[2])
   const scaleY = Math.abs((extent[1] - extent[3]) / crop[3])
-  img.values_.source.setScale([Math.min(scaleX, scaleY), Math.min(scaleX, scaleY)])
+  const newScale = Math.min(scaleX, scaleY)
+  img.values_.source.setScale([newScale, newScale])
+  $('#image-scale').val(newScale.toFixed(2))
 }
 
 const addImage = document.getElementById('button-uploadImage')

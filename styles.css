@@ -7,11 +7,35 @@
     --spWidth: 24%;
     --marTop: 4px;
     --maxZindex: 2;
-  }
+}
+
+@font-face {
+    font-family: 'distroy23';
+    src: local('fonts/distroy23'), 
+        url('distroy.23.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: 'balmont';
+    src: local('balmont'), 
+        url('fonts/Balmont Deco.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: 'yanone';
+    src: local('yanone'), 
+        url('fonts/YanoneKaffeesatz.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 600;
+}
 
 body {
     background-color: var(--primColor);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Times New Roman', Times, serif;
     font-size: 14px;
     color: var(--textColor);
     margin: 0;
@@ -46,7 +70,6 @@ body {
     left: var(--spWidth);
     height: 100%;
     margin: 8px; 
-    top: 52px;
 }
 
 .log {
@@ -103,22 +126,22 @@ body {
     margin-top: var(--marTop);
 }
 
-.upload-image {
+.butRight {
     overflow: hidden;
 }
 
-.upload-image label {
+.butRight label {
     display: inline-block;
     width: calc(100% - 88px);
     margin-top: var(--marTop);
 }
 
-.upload-image button {
+.butRight button {
     display: inline-block;
     width: 80px;
     height: 24px;
-    float: right;
     margin-top: var(--marTop);
+    margin-bottom: 2px;
 }
 
 /*.sidepanel-button-undo {
@@ -243,6 +266,7 @@ body {
     width: calc(100% - 88px);
     height: 24px;
     margin-top: var(--marTop);
+    margin-bottom: 2px;
 }
 
 .input-button button {
@@ -294,6 +318,13 @@ body {
     background-position: 3px;
     background-color: var(--primColor);
 }*/
+
+#button-home {
+    background: url('./svg_files/rocket.svg') no-repeat 0 0;
+    background-size: 80%; 
+    background-position: 3px;
+    background-color: var(--primColor);
+}
 
 #button-mouse {
     background: url('./svg_files/mouse.svg') no-repeat 0 0;
@@ -455,7 +486,7 @@ details[open]::before {
         height: 0;
     }
     100% {
-        height: 172px;
+        height: 164px;
     }
 }
 @keyframes fadeMe {

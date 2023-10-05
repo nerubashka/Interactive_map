@@ -315,12 +315,12 @@ function fMeasure (feature) {
   const fType = feature.values_.geometry.getType()
   if (fType === 'Polygon') {
     num = getArea(feature.values_.geometry)
-    num = (num > 1000000) ? (num/1000000^0) + ' km²' : (num^0) + ' m²'
-    $('#feature-measure').html('Area = ' + num)
+    num = (num > 1000000) ? (num/1000000^0) + ' км²' : (num^0) + ' м²'
+    $('#feature-measure').html('Площадь = ' + num)
   } else if (fType === 'LineString') {
     num = getLength(feature.values_.geometry)
-    num = (num > 1000) ? (num/1000^0) + ' km' : (num^0) + ' m'
-    $('#feature-measure').html('Length = ' + num)
+    num = (num > 1000) ? (num/1000^0) + ' км' : (num^0) + ' м'
+    $('#feature-measure').html('Длина = ' + num)
   } else
     $('#feature-measure').html('')
   fsidepanel.style.display = 'block'

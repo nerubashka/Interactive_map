@@ -27,7 +27,7 @@ const mapSave = {
     layers: [], 
     features: [],
     images: []
-} //['ol'], ['vector'], ['raster']
+} 
 
 const layerStyles = [
     'OSMVectorTileLayer',

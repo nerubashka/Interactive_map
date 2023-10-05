@@ -7,22 +7,25 @@
     <link rel='icon' href='./svg_files/favicon.svg' type='image/svg+xml'>
     <link rel='stylesheet' href='node_modules/ol/ol.css'>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet'>
+    <!--<link rel='stylesheet' href='https://openlayers.org/en/v4.6.5/css/ol.css' type='text/css'>-->
     <link rel='stylesheet' href='./styles.css'>
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
 </head>
 <body>
     <div id='js-map' class='map'> </div>
     <div class='layersBlock'>
-        <button id='button-mouse' title='Clear mouse'></button>
-        <button id='button-point' title='Add points'></button>
-        <button id='button-linestring' title='Add lines'></button>
-        <button id='button-box' title='Add boxes'></button>
-        <button id='button-polygon' title='Add polygons'></button>
-        <button id='button-move' title='Move objects'></button>
+        <form action='index.html' target='_self'>
+        <button id='button-home' title='Стартовая страница'></button></form>
+        <button id='button-mouse' title='Очистить курсор'></button>
+        <button id='button-point' title='Добавить метки'></button>
+        <button id='button-linestring' title='Добавить линии'></button>
+        <button id='button-box' title='Добавить прямоугольники'></button>
+        <button id='button-polygon' title='Добавить многоугольники'></button>
+        <button id='button-move' title='Перемещение объектов'></button>
         <input type='file' id='upload-file' name='file' accept='.geoJSON' hidden='hidden'>
-        <button id='button-uploadFile' title='Upload file .GeoJSON'></button>
+        <button id='button-uploadFile' title='Загрузить файл .GeoJSON'></button>
         <details>
-            <summary title='Change layer'></summary>
+            <summary title='Выбрать слой карты'></summary>
             <nav class='layers' >
                 <ul id='layers'>
                     <li value='OSMVectorTileLayer'><a href='#'>Basic map</a></li>
@@ -42,7 +45,7 @@
         <hr>
         <div class='sidepanel-item'>
             <label class='checkbox'>
-                Modify features
+                Изменение объектов
                 <input type='checkbox' id='modify' >
                 <span class='checkbox-switch' ></span>
             </label>
@@ -56,55 +59,55 @@
         </div>
         <hr>
         <div class='sidepanel-item features-select'>
-            Features: 
+            Объекты: 
             <select id='features-list'>
-                <option value='No features'>No features</option>
+                <option value='Объектов нет'>Объектов нет</option>
             </select>
-            <button class='sidepanel-button' id='feature-select'>Select</button>
+            <button class='sidepanel-button' id='feature-select'>Выбрать</button>
         </div>
         <div class='sidepanel-item features-select'>
-            Images: 
+            Изображения: 
             <select id='images-list'>
-                <option value='No images'>No images</option>
+                <option value='Изображений нет'>Изображений нет</option>
             </select>
-            <button class='sidepanel-button' id='images-select'>Show</button>
+            <button class='sidepanel-button' id='images-select'>Показать</button>
         </div>
         <div class='sidepanel-item'>
-            <button class='sidepanel-button' id='images-hide'>Hide all images</button>
+            <button class='sidepanel-button' id='images-hide'>Скрыть все изображения</button>
         </div>
         <hr>
         <section id='feature-sidepanel' style='display: none'>
             <div class='sidepanel-item'>
-                <h3>Features</h3>
+                <h3>Объекты</h3>
                 <p id='feature-measure'>+</p>
             </div>
             
-            <div class='sidepanel-item'>
-                Delete feature
-                <button class='sidepanel-button load' id='feature-delete' style='display: block'>Delete</button>
+            <div class='sidepanel-item butRight'>
+                <label>Удалить объект</label>
+                <button class='sidepanel-button' id='feature-delete'>Удалить</button>
             </div>
             <div class='sidepanel-item fileName'>
-                <label>Enter name for export file</label>
+                <label>Введите имя файла для сохранения</label>
                 <input type='text' placeholder='Enter file name' required id='file-name'/>
-                <button class='sidepanel-button load' id='button-downloadFile'> Download geoJSON </button>
-                <button class='sidepanel-button load' id='button-downloadImage'> Download image </button>
+                <button class='sidepanel-button load' id='button-downloadFile'> Скачать файл .geoJSON </button>
+                <button class='sidepanel-button load' id='button-downloadImage'> Скачать изображение </button>
             </div>
             <hr>
-            <div class='sidepanel-item'><h3>Images</h3></div>
-            <div class='sidepanel-item upload-image'>                
-                <label>Upload image</label>
+            <div class='sidepanel-item'><h3>Изображения</h3></div>
+            <div class='sidepanel-item butRight'>                
+                <label>Загрузить изображение</label>
                 <input type='file' id='upload-image' name='image' accept='.jpg,.jpeg,.png' hidden='hidden'>
-                <button class='sidepanel-button' id='button-uploadImage'>Upload</button>
+                <button class='sidepanel-button' id='button-uploadImage'>Загрузить</button>
             </div>
             <div class='sidepanel-item input-button'>
-                <label>Change image scale</label>
+                <label>Изменить масштаб изображения</label>
                 <input type='text' id='image-scale' value='100' placeholder='Enter scale'>
-                <button class='sidepanel-button' id='button-scale'>Change</button>
+                <button class='sidepanel-button' id='button-scale'>Изменить</button>
             </div>
             <div class='sidepanel-item'>
                 <!--<label>Set mask</label>-->
-                <button class='sidepanel-button load' id='button-mask'> Set mask </button>
-                <button class='sidepanel-button load' id='full-size'>Full size</button>
+                <button class='sidepanel-button load' id='button-mask'> Задать границы </button>
+                <button class='sidepanel-button load' id='full-size'>Развернуть</button>
             </div>
             <hr>
         <!--</section>
