@@ -1,0 +1,164 @@
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1,user-scalable=no'>
+    <title>Interactive map</title>
+    <link rel='icon' href='./svg_files/favicon.svg' type='image/svg+xml'>
+    <style>
+        @font-face {
+            font-family: 'yanone';
+            src: local('yanone'), 
+                url('fonts/YanoneKaffeesatz.ttf') format('truetype');
+            font-style: normal;
+            font-weight: 300;
+        }
+        body {
+            background-color: #1C1C1C;
+            font-family: 'yanone';
+            font-size: 30px;
+            color: #f4f4f4d3;
+            margin: 0;
+            padding: 5% 0;
+        }
+        section {
+            z-index: 2;
+            position: absolute;
+            left: 0;
+            top: calc(10% + 40px);
+            height: 60%;
+            padding: 40px 80px;
+            margin: auto auto; 
+            background-color: rgba(0, 0, 0, 0);
+            border-radius: 10px;
+        }
+        h1 {
+            top: 20px;
+        }
+        .glow-on-hover {
+            width: 220px;
+            height: 50px;
+            border: none;
+            outline: none;
+            color: #f4f4f4;
+            background: #f4f4f420;
+            cursor: pointer;
+            position: relative;
+            z-index: 0;
+            border-radius: 4px;
+        }
+
+        .glow-on-hover:before {
+            content: '';
+            background: linear-gradient(45deg, #bf0d3e, #ff8142,#ee5340, #3c1053, #bf0d3e);
+            position: absolute;
+            top: -2px;
+            left:-2px;
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 15s linear infinite;
+            opacity: 0;
+            transition: opacity .3s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .glow-on-hover:active:after {
+            background: transparent;
+        }
+
+        .glow-on-hover:hover:before {
+            opacity: 1;
+        }
+
+        .glow-on-hover:after {
+            z-index: -1;
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #f4f4f420;
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+        }
+
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+
+        table {
+            border: none;
+            margin-top: 60px;
+            margin-bottom: 0px;
+            background-color: #f4f4f420;
+            border:1px solid white;
+        }
+        table tbody td {
+            padding: 16px;
+            font-size: 20px;
+            line-height: 20px;
+            border-top: 1px solid white;
+        }
+        
+        #sphere-wrap {
+            z-index: 1;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 100%;
+            width: 100%;
+        }
+        #sphere {
+            height: 100%;
+            width: 100%;
+            background-size: cover;
+        }
+        #canvas {
+            z-index: 1;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 40%;
+        }
+        
+    </style>
+</head>
+<body>
+    <div id='sphere-wrap'>
+        <canvas id='sphere'></canvas>
+    </div>
+    <canvas id="canvas"></canvas>
+    <section>
+        <h1>
+            Разработка интерактивной карты для работы 
+            со спутниковыми снимками 
+        </h1>
+        <h3>Курсовой проект</h3>
+
+        <table>
+            <tr>
+                <td 
+                style='border-top: 1px solid #f4f4f400;
+                       border-right: 1px solid white'>Выполнила:</td>
+                <td style='border-top: 1px solid #f4f4f400'>Нерубацкая Анастасия Ильинична, студентка 5 курса специалитета</td>
+            </tr>
+            <tr>
+                <td style='border-right: 1px solid white'>Научный руководитель:</td>
+                <td>Сазонова Софья Викторовна, кандидат физико-математических наук</td>
+            </tr>
+            <tr>
+                <td style='border-right: 1px solid white'>Образовательная организация:</td>
+                <td>факультет космических исследований МГУ имени М.В. Ломоносова</td>
+            </tr>
+        </table>
+        <form action='../dist/intMap.html' target='_self'>
+        <button class='glow-on-hover' style='position: relative; margin: 40px 25%;'>Переход к карте</button></form>
+    </section>
+</body>
+<script src='./sphere.js'></script>
+<!--<script src='./scripts/connectedPoints.js'></script>-->
