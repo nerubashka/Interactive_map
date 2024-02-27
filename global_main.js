@@ -1,23 +1,3 @@
-import Map from 'ol/Map.js'
-import View from 'ol/View.js'
-import {ScaleLine} from 'ol/control.js'
-// draw-features
-import {Vector as VectorSource, OSM, BingMaps} from 'ol/source.js'
-import {Vector as VectorLayer, Tile} from 'ol/layer.js'
-import Draw, {createBox, createRegularPolygon} from 'ol/interaction/Draw.js'
-import {Modify, Translate, Select} from 'ol/interaction.js'
-import {Circle, Fill, Stroke, Style} from 'ol/style.js'
-import {getCenter} from 'ol/extent.js'
-//import {parse as Parse} from 'geojson/geojson.js'
-import GeoJSON from 'ol/format/GeoJSON.js'
-import {getLength, getArea} from 'ol/sphere'
-//sat-images
-import GeoImageSource from 'ol-ext/source/GeoImage.js'
-import GeoImageLayer from 'ol-ext/layer/GeoImage.js'
-
-import './styles.css'
-import '../node_modules/ol/ol.css'
-
 console.log('global-main')
 
 const fColor = '#fa9868'
@@ -39,22 +19,22 @@ const layerStyles = [
 ]
 
 mapSave.layers.push(
-    new Tile({
+    new ol.layer.Tile({
         visible: true,
         preload: Infinity,
         name: layerStyles[0],
-        source: new OSM(),
+        source: new ol.source.OSM(),
     })
 )
 
 let i, ii
 for (i = 1, ii = layerStyles.length; i < ii; ++i) {
     mapSave.layers.push(
-      new Tile({
+      new ol.layer.Tile({
         visible: false,
         preload: Infinity,
         name: layerStyles[i],
-        source: new BingMaps({
+        source: new ol.source.BingMaps({
           key: 'Aj1wlFu3oQesdVRbVqRCya26QH4JFMroG6Krq8IiHhTDou2IOMVE7Rh2KbghTfSf',
           imagerySet: layerStyles[i],
         }),
@@ -64,9 +44,9 @@ for (i = 1, ii = layerStyles.length; i < ii; ++i) {
 
 // ------------------------------------------------------------
 
-const map = new Map({
-    controls: [new ScaleLine()], //{units: 'metric'}
-    view: new View({
+const map = new ol.Map({
+    controls: [new ol.control.ScaleLine()], //{units: 'metric'}
+    view: new ol.View({
         center: [4175891.7770009562, 7494601.666061781],
         zoom: 5,
     }),
@@ -94,39 +74,39 @@ ul.addEventListener('click', onChange)
 
 // draw-features
 
-const featureStyle = new Style({
-    stroke: new Stroke({
+const featureStyle = new ol.style.Style({
+    stroke: new ol.style.Stroke({
         color: sColor,
         width: 1.5,
     }),
-    fill: new Fill({
+    fill: new ol.style.Fill({
         color: fColor+'50',
     }),
-    image: new Circle({
+    image: new ol.style.Circle({
         radius: 5,
-        fill: new Fill({
+        fill: new ol.style.Fill({
             color: fColor,
         }),
     }),
 })
   
-const selectedFeatureStyle = new Style({
-    stroke: new Stroke({
+const selectedFeatureStyle = new ol.style.Style({
+    stroke: new ol.style.Stroke({
         color: sColor,
         width: 4,
     }),
-    fill: new Fill({
+    fill: new ol.style.Fill({
         color: sColor+'50',
     }),
-    image: new Circle({
+    image: new ol.style.Circle({
         radius: 7,
-        fill: new Fill({
+        fill: new ol.style.Fill({
             color: sColor,
         }),
     }),
 })
 
-let select = new Select({
+let select = new ol.interaction.Select({
     style: selectedFeatureStyle
 })
 map.addInteraction(select)
@@ -140,8 +120,8 @@ function setSelect (feature) {
 select.features_.push(feature)
 }
 
-let source = new VectorSource()
-const vector = new VectorLayer({
+let source = new ol.source.Vector()
+const vector = new ol.layer.Vector({
     source: source,
     style: featureStyle,
     name: 'geoJSON-layer',
@@ -149,7 +129,7 @@ const vector = new VectorLayer({
 //mapSave.layers.push(vector)
 map.addLayer(vector)
 
-let translate = new Translate({
+let translate = new ol.interaction.Translate({
     layer: vector
 })
 map.addInteraction(translate)
@@ -160,7 +140,7 @@ translate.on('translateend', () => {
         let feature = translate.lastFeature_
         let img = mapSave.images.find((el) => el.name === feature.img_name)
         console.log(img)
-        img.values_.source.setCenter(getCenter(feature.values_.geometry.extent_))
+        img.values_.source.setCenter(ol.extent.getCenter(feature.values_.geometry.extent_))
         const mask = maskCoords(feature.values_.geometry.flatCoordinates)
         img.values_.source.setMask(mask)
     }
@@ -187,7 +167,7 @@ function cleanMouse () {
     map.removeInteraction(draw)
     translate.setActive(false)
     map.removeInteraction(select)
-    select = new Select({
+    select = new ol.interaction.Select({
         style: selectedFeatureStyle
     })
     map.addInteraction(select)
@@ -221,10 +201,12 @@ function addDraw(getValue = false) {
 
     if (getValue === 'Box' || getValue === 'Square') {
         value = 'Circle'
-        geometryFunction = (getValue === 'Box') ? createBox() : createRegularPolygon(4)
+        geometryFunction = (getValue === 'Box') 
+                            ? ol.interaction.Draw.createBox() 
+                            : ol.interaction.Draw.createRegularPolygon(4)
     }
     console.log('Новая фигура: ' + getValue)
-    draw = new Draw({
+    draw = new ol.interaction.Draw({
         source: source,
         type: value,
         style: featureStyle,
@@ -308,7 +290,7 @@ const file = document.querySelector('input[name="file"]').files[0]
         return response.json()
     })
     .then(function (json) {
-        const gformat = new GeoJSON()
+        const gformat = new ol.format.GeoJSON()
         const feature = gformat.readFeatures(json)[0]
         feature.getGeometry().transform('EPSG:4326', 'EPSG:3857')
         feature.name = file.name.split('.')[0]
@@ -377,7 +359,7 @@ drawSaveF.onclick = () => {
 }
 
 // Изменять полигоны
-const modify = new Modify({source: source})
+const modify = new ol.interaction.Modify({source: source})
 const modifyChange = document.getElementById('modify')
 modifyChange.addEventListener('change', ()=>{
     if (modifyChange.checked){
@@ -393,11 +375,11 @@ function fMeasure (feature) {
     let num
     const fType = feature.values_.geometry.getType()
     if (fType === 'Polygon') {
-        num = getArea(feature.values_.geometry)
+        num = ol.sphere.getArea(feature.values_.geometry)
         num = (num > 1000000) ? (num/1000000^0) + ' км²' : (num^0) + ' м²'
         $('#feature-measure').html('Площадь = ' + num)
     } else if (fType === 'LineString') {
-        num = getLength(feature.values_.geometry)
+        num = ol.sphere.getLength(feature.values_.geometry)
         num = (num > 1000) ? (num/1000^0) + ' км' : (num^0) + ' м'
         $('#feature-measure').html('Длина = ' + num)
     } else
@@ -413,11 +395,11 @@ uploadImage.addEventListener('change', ()=>{
   const image = document.querySelector('input[name="image"]').files[0]
   console.log('image', image)
   const extent = feature.values_.geometry.extent_
-  const center = getCenter(extent)
+  const center = ol.extent.getCenter(extent)
   const mask = maskCoords(feature.values_.geometry.flatCoordinates)
-  let geoimg = new GeoImageLayer({
+  let geoimg = new ol-ext.layer.GeoImageLayer({
     opacity: .7,
-    source: new GeoImageSource({
+    source: new ol-ext.source.GeoImageSource({
       url: './images/' + image.name,
       imageCenter: center,
       imageScale: [100,100],
