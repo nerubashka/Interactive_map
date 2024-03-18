@@ -1,5 +1,13 @@
 console.log('global-main')
 
+const urlHome = './svg_files/rocket.svg'
+const urlMouse = './svg_files/mouse.svg'
+const urlPoint = './svg_files/point.svg'
+const urlLinestring = './svg_files/linestring.svg'
+const urlBox = './svg_files/box.svg'
+const urlPolygon = './svg_files/polygon.svg'
+const urlMove = './svg_files/move.svg'
+
 const fColor = '#fa9868'
 const sColor = '#31032A'
 let draw = 42
@@ -164,6 +172,8 @@ map.on('click', async function (ev) {
 })
 
 function cleanMouse () {
+    //$('#parentOfElementToBeRedrawn').hide().show(0)
+    $("html").css(`cursor: url('${urlMouse}')`)
     map.removeInteraction(draw)
     translate.setActive(false)
     map.removeInteraction(select)
@@ -274,33 +284,45 @@ deleteFeature.onclick = () => {
     if (feature) featureDelete(feature)
 }
 
-const addFeature = document.getElementById('button-uploadFile')
-addFeature.onclick = ()=>{
-    uploadFile.click()
-}
+// Загрузка объектов с локалки
+function loadFile() {
+    var input, file, fr;
 
-// upload vector data
-// !Не работает вместе с <2 ... 2>
-//<1
-const uploadFile = document.getElementById('upload-file')
-uploadFile.addEventListener('change', ()=>{
-const file = document.querySelector('input[name="file"]').files[0]
-    fetch('./data/'+file.name)
-    .then(function (response) {
-        return response.json()
-    })
-    .then(function (json) {
+    if (typeof window.FileReader !== 'function') {
+        alert("The file API isn't supported on this browser yet.");
+        return;
+    }
+
+    input = document.getElementById('fileinput');
+    if (!input) {
+        alert("Um, couldn't find the fileinput element.");
+    }
+    else if (!input.files) {
+        alert("This browser doesn't seem to support the `files` property of file inputs.");
+    }
+    else if (!input.files[0]) {
+        alert("Please select a file before clicking 'Load'");
+    }
+    else {
+        file = input.files[0];
+        fr = new FileReader();
+        fr.onload = receivedText;
+        fr.readAsText(file);
+    }
+
+    function receivedText(e) {
+        let lines = e.target.result;
+        const jsonFile = JSON.parse(lines); 
         const gformat = new ol.format.GeoJSON()
-        const feature = gformat.readFeatures(json)[0]
+        const feature = gformat.readFeatures(jsonFile)[0]
         feature.getGeometry().transform('EPSG:4326', 'EPSG:3857')
         feature.name = file.name.split('.')[0]
         vector.getSource().addFeature(feature)
         mapSave.features.push(feature)
         featuresList()
         console.log(file.name + ' загружен')
-    })
-})
-//1>
+    }
+}
 
 const selectFeature = document.getElementById('feature-select') 
 selectFeature.onclick = () => {
@@ -314,10 +336,8 @@ selectFeature.onclick = () => {
 }
 
 // Сохранение файлов в geojson
-// ! не работает вместе с <1 ... 1>
-
 //<2
-/*function makeGeojsonFile (data) {
+function makeGeojsonFile (data) {
 var source = new Proj4js.Proj('EPSG:4326') // lon\lat
 var dest = new Proj4js.Proj('EPSG:3785') //x\y
 let coords = []
@@ -334,7 +354,7 @@ const geoData = [
     }
 ]
 return([ JSON.stringify(GeoJSON.parse( geoData, {'Polygon': 'polygon'} )) , coords])
-}*/
+}
 //2>
 
 const drawSaveF = document.getElementById('button-downloadFile')
@@ -343,9 +363,9 @@ drawSaveF.onclick = () => {
     if ($('input[required]').val() != '') {
         const fileName = $('input[required]').val() + '.geojson'
         const feature = select.getFeatures().getArray()[0].values_.geometry
-        const geojson = makeGeojsonFile(feature.flatCoordinates)[0]
+        const geoJson = makeGeojsonFile(feature.flatCoordinates)[0]
         const a = document.createElement('a')
-        const file = new Blob([geojson], { type: 'text/plain'})
+        const file = new Blob([geoJson], { type: 'text/plain'})
         a.href = window.URL.createObjectURL(file)
         a.download = fileName
         a.click()
@@ -397,9 +417,11 @@ uploadImage.addEventListener('change', ()=>{
   const extent = feature.values_.geometry.extent_
   const center = ol.extent.getCenter(extent)
   const mask = maskCoords(feature.values_.geometry.flatCoordinates)
-  let geoimg = new ol-ext.layer.GeoImageLayer({
+  let test = new ol.layer.GeoImage()
+  console.log(test)
+  let geoimg = new ol.layer.GeoImage({
     opacity: .7,
-    source: new ol-ext.source.GeoImageSource({
+    source: new ol.source.GeoImage({
       url: './images/' + image.name,
       imageCenter: center,
       imageScale: [100,100],

@@ -364,6 +364,36 @@ body {
     background-color: var(--primColor);
 }
 
+#btnLoad {
+    margin-top: 4px;
+    padding: 4px;
+    width: 72px;
+    background-color: var(--secoColor);
+    border: 1px solid var(--shadColor);
+    border-radius: 4px;
+    color: var(--textColor);
+}
+#btnLoad:hover {
+    color: var(--primColor);
+    box-shadow: 0 0 4px var(--shadColor);
+    -moz-box-shadow: 0 0 4px var(--shadColor);
+    -o-box-shadow: 0 0 4px var(--shadColor);
+    -ms-box-shadow: 0 0 4px var(--shadColor);
+    -webkit-box-shadow: 0 0 4px var(--shadColor);
+} 
+#btnLoad:disabled {
+    color: var(--textColor);
+    background-color: var(--primColor);
+    counter-reset: var(--textColor);
+    box-shadow: none;
+}
+
+.modal-item {
+    display: relative;
+    text-align: center;
+    margin: 40px auto;
+}
+
 #button-uploadFile {
     background: url('./svg_files/uploadFile.svg') no-repeat 0 0;
     background-size: 95%; 
