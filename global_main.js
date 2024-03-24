@@ -1,12 +1,12 @@
 console.log('global-main')
 
-const urlHome = './svg_files/rocket.svg'
-const urlMouse = './svg_files/mouse.svg'
-const urlPoint = './svg_files/point.svg'
-const urlLinestring = './svg_files/linestring.svg'
-const urlBox = './svg_files/box.svg'
-const urlPolygon = './svg_files/polygon.svg'
-const urlMove = './svg_files/move.svg'
+//const urlHome = 'url(./svg_files/rocket.svg), auto'
+const urlMouse = 'url(./svg_files/mouse.svg), auto'
+const urlPoint = 'url(./svg_files/point.svg) 16 30, auto'
+const urlLineString = 'url(./svg_files/linestring.svg) 17 16, auto'
+const urlBox = 'url(./svg_files/box.svg), auto'
+const urlPolygon = 'url(./svg_files/polygon.svg), auto'
+const urlMove = 'url(./svg_files/move.svg) 16 16, auto'
 
 const fColor = '#fa9868'
 const sColor = '#31032A'
@@ -64,8 +64,8 @@ const map = new ol.Map({
 })
 
 const ul = document.querySelector('#layers')
-function onChange(event) {
-    const eTarget = event.target
+function onChange(e) {
+    const eTarget = e.target
     let style = ''
     if (eTarget.localName === 'a') {
         style = eTarget.parentElement.outerHTML.split('"')[1]
@@ -73,7 +73,7 @@ function onChange(event) {
     else if (eTarget.localName === 'li') {
         style = eTarget.outerHTML.split('"')[1]
     }
-    console.log(style)
+    console.log('Слой обновлен:', style)
     for (let i = 0, ii = mapSave.layers.length; i < ii; ++i) {
         mapSave.layers[i].setVisible(layerStyles[i] === style)
     }
@@ -128,7 +128,7 @@ function setSelect (feature) {
 select.features_.push(feature)
 }
 
-let source = new ol.source.Vector()
+const source = new ol.source.Vector()
 const vector = new ol.layer.Vector({
     source: source,
     style: featureStyle,
@@ -143,7 +143,7 @@ let translate = new ol.interaction.Translate({
 map.addInteraction(translate)
 translate.setActive(false)
 
-translate.on('translateend', () => {
+/*translate.on('translateend', () => {
     if (translate.lastFeature_.img_name !== undefined) {
         let feature = translate.lastFeature_
         let img = mapSave.images.find((el) => el.name === feature.img_name)
@@ -152,14 +152,14 @@ translate.on('translateend', () => {
         const mask = maskCoords(feature.values_.geometry.flatCoordinates)
         img.values_.source.setMask(mask)
     }
-})
+})*/
 
 //features sidepanel
 const fsidepanel = document.getElementById('feature-sidepanel')
 
-map.on('click', async function (ev) {
+map.on('click', async function (e) {
     if (draw === 1) {
-        const feature = map.forEachFeatureAtPixel(ev.pixel, function(feature) { return feature })
+        const feature = map.forEachFeatureAtPixel(e.pixel, function(feature) { return feature })
         if (feature) {
         select.getFeatures().push(feature)
         fMeasure(feature)
@@ -172,8 +172,7 @@ map.on('click', async function (ev) {
 })
 
 function cleanMouse () {
-    //$('#parentOfElementToBeRedrawn').hide().show(0)
-    $("html").css(`cursor: url('${urlMouse}')`)
+    document.body.style.cursor = urlMouse
     map.removeInteraction(draw)
     translate.setActive(false)
     map.removeInteraction(select)
@@ -203,8 +202,16 @@ function featuresList () {
     $('#features-list').html(options)
 }
 
+const cursorStyle = {
+    'Point': urlPoint,
+    'LineString': urlLineString,
+    'Box': urlBox,
+    'Polygon': urlPolygon
+}
 const typeSelect = document.getElementById('feature-type')
 function addDraw(getValue = false) {
+    if (getValue)
+        document.body.style.cursor = cursorStyle[getValue]
     let geometryFunction
     let value = (getValue) ? getValue : typeSelect.value
     getValue = value
@@ -215,7 +222,7 @@ function addDraw(getValue = false) {
                             ? ol.interaction.Draw.createBox() 
                             : ol.interaction.Draw.createRegularPolygon(4)
     }
-    console.log('Новая фигура: ' + getValue)
+    console.log('Новая фигура:', getValue)
     draw = new ol.interaction.Draw({
         source: source,
         type: value,
@@ -260,20 +267,25 @@ const drawMove = document.getElementById('button-move')
 drawMove.onclick = () => {
     cleanMouse()
     translate.setActive(true)
+    document.body.style.cursor = urlMove
 }
 
 function featureDelete (feature) {
-    if (feature.img_name !== undefined) {
+    if (feature.img !== undefined) {
         mapSave.images = mapSave.images.filter((el) => {
-        return el.name !== feature.img_name
+            return el.name !== feature.img.name
         })
         ImagesList()
+        console.log('Изображение', feature.img.name, 'удалено')
+        map.removeLayer(feature.img)
     }
     mapSave.features = mapSave.features.filter((el) => {
         return el.name !== feature.name
     })
     vector.getSource().removeFeature(feature)
     featuresList()
+    console.log('Объект', feature.name, 'удален')
+    map.removeLayer(feature)
     cleanMouse()
 }
 
@@ -285,42 +297,44 @@ deleteFeature.onclick = () => {
 }
 
 // Загрузка объектов с локалки
-function loadFile() {
-    var input, file, fr;
+
+function loadFeature() {
+    let input, file, fr
 
     if (typeof window.FileReader !== 'function') {
-        alert("The file API isn't supported on this browser yet.");
-        return;
+        alert("The file API isn't supported on this browser yet.")
+        return
     }
 
-    input = document.getElementById('fileinput');
+    input = document.getElementById('featureinput')
     if (!input) {
-        alert("Um, couldn't find the fileinput element.");
+        alert("Um, couldn't find the fileinput element.")
     }
     else if (!input.files) {
-        alert("This browser doesn't seem to support the `files` property of file inputs.");
+        alert("This browser doesn't seem to support the `files` property of file inputs.")
     }
     else if (!input.files[0]) {
-        alert("Please select a file before clicking 'Load'");
+        alert("Please select a file before clicking 'Load'")
     }
     else {
-        file = input.files[0];
-        fr = new FileReader();
-        fr.onload = receivedText;
-        fr.readAsText(file);
-    }
-
-    function receivedText(e) {
-        let lines = e.target.result;
-        const jsonFile = JSON.parse(lines); 
-        const gformat = new ol.format.GeoJSON()
-        const feature = gformat.readFeatures(jsonFile)[0]
-        feature.getGeometry().transform('EPSG:4326', 'EPSG:3857')
-        feature.name = file.name.split('.')[0]
-        vector.getSource().addFeature(feature)
-        mapSave.features.push(feature)
-        featuresList()
-        console.log(file.name + ' загружен')
+        file = input.files[0]
+        fr = new FileReader()
+        fr.onload = function (e) {
+            let lines = e.target.result
+            const jsonFile = JSON.parse(lines)
+            const gformat = new ol.format.GeoJSON()
+            const feature = gformat.readFeatures(jsonFile)[0]
+            feature.getGeometry().transform('EPSG:4326', 'EPSG:3857')
+            feature.name = file.name.split('.')[0]
+            while (mapSave.features.filter((el) => {return el.name === feature.name}).length !== 0)
+                feature.name = feature.name + '+'
+            vector.getSource().addFeature(feature)
+            mapSave.features.push(feature)
+            featuresList()
+            console.log(feature.name + ' загружен')
+        }
+        fr.readAsText(file)
+        input.value = ''
     }
 }
 
@@ -338,8 +352,8 @@ selectFeature.onclick = () => {
 // Сохранение файлов в geojson
 //<2
 function makeGeojsonFile (data) {
-var source = new Proj4js.Proj('EPSG:4326') // lon\lat
-var dest = new Proj4js.Proj('EPSG:3785') //x\y
+let source = new Proj4js.Proj('EPSG:4326') // lon\lat
+let dest = new Proj4js.Proj('EPSG:3785') //x\y
 let coords = []
 let point, x, y
 for (let i = 0; i < data.length; i += 2) {
@@ -409,35 +423,84 @@ function fMeasure (feature) {
 
 // sat-images
 
-const uploadImage = document.getElementById('upload-image')
-uploadImage.addEventListener('change', ()=>{
-  let feature = getSelect()
-  const image = document.querySelector('input[name="image"]').files[0]
-  console.log('image', image)
-  const extent = feature.values_.geometry.extent_
-  const center = ol.extent.getCenter(extent)
-  const mask = maskCoords(feature.values_.geometry.flatCoordinates)
-  let test = new ol.layer.GeoImage()
-  console.log(test)
-  let geoimg = new ol.layer.GeoImage({
-    opacity: .7,
-    source: new ol.source.GeoImage({
-      url: './images/' + image.name,
-      imageCenter: center,
-      imageScale: [100,100],
-      imageMask: mask,
-      projection: 'EPSG:3785',
-    }),
-    box_name: feature.name,
-  })
-  feature.img_name = image.name.split('.')[0]
-  geoimg.name = image.name.split('.')[0]
-  mapSave.images.push(geoimg)
-  map.addLayer(geoimg)
-  console.log(image.name.split('.')[0], ' loaded')
-  ImagesList()
-  cleanMouse()
-})
+function loadImage() {
+    let input, file
+
+    if (typeof window.FileReader !== 'function') {
+        alert("The file API isn't supported on this browser yet.")
+        return
+    }
+
+    input = document.getElementById('imageinput')
+    if (!input) {
+        alert("Um, couldn't find the fileinput element.")
+    }
+    else if (!input.files) {
+        alert("This browser doesn't seem to support the `files` property of file inputs.")
+    }
+    else if (!input.files[0]) {
+        alert("Please select a file before clicking 'Load'")
+    }
+    else {
+        correct()
+    }
+
+    function test() {
+        file = input.files[0]
+        fr = new FileReader()
+        fr.onload = function (e) {
+            let lines = e.target.result
+            const jsonFile = JSON.parse(lines)
+            const gformat = new ol.format.GeoJSON()
+            const feature = gformat.readFeatures(jsonFile)[0]
+            feature.getGeometry().transform('EPSG:4326', 'EPSG:3857')
+            feature.name = file.name.split('.')[0]
+            while (mapSave.features.filter((el) => {return el.name === feature.name}).length !== 0)
+                feature.name = feature.name + '+'
+            vector.getSource().addFeature(feature)
+            mapSave.features.push(feature)
+            featuresList()
+            console.log(feature.name + ' загружен')
+        }
+        fr.readAsText(file)
+        input.value = ''
+    }
+    function correct(){
+        file = input.files[0]
+        let feature = getSelect()
+        const extent = feature.values_.geometry.extent_
+        let geoimg = new ol.layer.Image({
+            //extent: bbox,
+            source: new ol.source.ImageStatic({
+                url: 'data/image.tiff',
+                imageExtent: extent,
+                imageLoadFunction: function(image, src) {
+                    let xhr = new XMLHttpRequest()
+                    xhr.responseType = 'arraybuffer'
+                    xhr.open('GET', src)
+                    xhr.onload = function (e) {
+                        let tiff = new Tiff({buffer: xhr.response})
+                        let canvas = tiff.toCanvas()
+                        image.getImage().src = canvas.toDataURL()
+                    }
+                    xhr.send()
+                }
+            }),
+            zIndex: 0
+        })
+        geoimg.ftr = feature
+        geoimg.name = file.name.split('.')[0]
+        while (mapSave.images.filter((el) => {return el.name === geoimg.name}).length !== 0) 
+            geoimg.name = geoimg.name + '+'
+        feature.img = geoimg
+        mapSave.images.push(geoimg)
+        map.addLayer(geoimg)
+        console.log(geoimg.name, 'загружено')
+        ImagesList()
+        cleanMouse()
+        input.value = ''
+    }
+}
 
 function ImagesList () {
   let options = ''
@@ -445,7 +508,6 @@ function ImagesList () {
     options = '<option value="No images">No images</option>'
   } else {
     for (let i = 0; i < mapSave.images.length; i++) {
-      console.log(mapSave.images[i].name)
       options += '<option value="' + mapSave.images[i].name + '">' + mapSave.images[i].name + '</option>'
     }
   }
@@ -488,11 +550,6 @@ fullSize.onclick = () => {
   const newScale = Math.min(scaleX, scaleY)
   img.values_.source.setScale([newScale, newScale])
   $('#image-scale').val(newScale.toFixed(2))
-}
-
-const addImage = document.getElementById('button-uploadImage')
-addImage.onclick = () => {
-  uploadImage.click()
 }
 
 const scaleImage = document.getElementById('button-scale')

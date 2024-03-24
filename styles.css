@@ -40,7 +40,7 @@ body {
     color: var(--textColor);
     margin: 0;
     padding: 0;
-    cursor: url('./svg_files/mouse.svg');
+    cursor: url('./svg_files/mouse.svg'), auto;
 }
 
 /* Основное меню---------------------------------------------------------*/
@@ -93,8 +93,12 @@ body {
 }
 
 .sidepanel-button{
+    display: inline-block;
+    text-align: center;
     margin-right: 4px;
     padding: 4px;
+    margin-left: auto;
+    min-width: 72px;
     background-color: var(--secoColor);
     border: 1px solid var(--shadColor);
     border-radius: 4px;
@@ -129,6 +133,7 @@ body {
 
 .butRight {
     overflow: hidden;
+    align-items: center;
 }
 
 .butRight label {
@@ -280,6 +285,7 @@ body {
 
 .features-select {
     display: flex;
+    align-items: center;
 }
 
 .features-select select {
@@ -364,8 +370,9 @@ body {
     background-color: var(--primColor);
 }
 
-#btnLoad {
-    margin-top: 4px;
+.btnLoad {
+    display: flex;
+    margin-top: var(--marTop);
     padding: 4px;
     width: 72px;
     background-color: var(--secoColor);
@@ -373,7 +380,7 @@ body {
     border-radius: 4px;
     color: var(--textColor);
 }
-#btnLoad:hover {
+.btnLoad:hover {
     color: var(--primColor);
     box-shadow: 0 0 4px var(--shadColor);
     -moz-box-shadow: 0 0 4px var(--shadColor);
@@ -381,7 +388,7 @@ body {
     -ms-box-shadow: 0 0 4px var(--shadColor);
     -webkit-box-shadow: 0 0 4px var(--shadColor);
 } 
-#btnLoad:disabled {
+.btnLoad:disabled {
     color: var(--textColor);
     background-color: var(--primColor);
     counter-reset: var(--textColor);
@@ -413,6 +420,16 @@ body {
 }
 */
 
+.loadFile{
+    display: flex;
+    align-items: center;
+    margin-top: var(--marTop);
+}
+
+.loadFile input[type=text]{
+    width: 100%;
+    margin-right: 4px;
+}
 summary {
     margin-top: var(--marTop);
     text-align: center;

@@ -11,7 +11,8 @@
         "ol-ext": "^4.0.11",
         "openlayers-ext": "^3.1.5",
         "proj4": "^2.9.0",
-        "proj4js": "^10.0.0"
+        "proj4js": "^10.0.0",
+        "tiff.js": "^1.0.0"
     },
     "devDependencies": {
         "vite": "^3.2.3"

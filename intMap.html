@@ -37,9 +37,7 @@
         
     </div>
     <div class='sidepanel'>
-        <!--<button id='home-page' title='Back to home page'><a href='index.html'></a></button>-->
         <h2 class='sidepanel-item'>Интерактивная карта</h2>
-        
         <hr>
         <div class='sidepanel-item'>
             <label class='checkbox'>
@@ -55,14 +53,14 @@
             </label>
             -->
         </div>
-        <hr>
         <!--(https://translated.turbopages.org/proxy_u/en-ru.ru.6db602f5-65f75abf-e1a2a183-74722d776562/https/stackoverflow.com/questions/7346563/loading-local%20-json-file)-->
+        <hr>
         <div class='sidepanel-item'>
             Загрузить объект
-            <form id="jsonFile" name="jsonFile" enctype="multipart/form-data" method="post" style='margin-top: 4px;'>
-                <input type='file' id='fileinput'>
-                <input type='button' id='btnLoad' class='butRight button' 
-                       value='Загрузить' onclick='loadFile();'>
+            <form id='jsonFile' name='jsonFile' enctype='multipart/form-data' method='post' class='loadFile'>
+                <input type='file' id='featureinput' accept='.geojson, .geoJSON, .GEOJSON'>
+                <input type='button' class='sidepanel-button'
+                       value='Загрузить' onclick='loadFeature();'>
             </form>
         </div>
         <hr>
@@ -90,27 +88,32 @@
                 <p id='feature-measure'>+</p>
             </div>
             
-            <div class='sidepanel-item butRight'>
-                <label>Удалить объект</label>
+            <div class='sidepanel-item loadFile'>
+                Удалить объект
                 <button class='sidepanel-button' id='feature-delete'>Удалить</button>
             </div>
             <div class='sidepanel-item fileName'>
                 <label>Введите имя файла для сохранения</label>
                 <input type='text' placeholder='Enter file name' required id='file-name'/>
-                <button class='sidepanel-button load' id='button-downloadFile'> Скачать файл .geoJSON </button>
-                <button class='sidepanel-button load' id='button-downloadImage'> Скачать изображение </button>
+                <button class='sidepanel-button load' id='button-downloadFile'> Скачать .geoJSON </button>
+                <button class='sidepanel-button load' id='button-downloadImage'> Скачать .tiff </button>
             </div>
             <hr>
             <div class='sidepanel-item'><h3>Изображения</h3></div>
-            <div class='sidepanel-item butRight'>                
-                <label>Загрузить изображение</label>
-                <input type='file' id='upload-image' name='image' accept='.jpg,.jpeg,.png' hidden='hidden'>
-                <button class='sidepanel-button' id='button-uploadImage'>Загрузить</button>
+            <div class='sidepanel-item'>
+                Загрузить изображение
+                <form id='imageFile' name='imageFile' enctype='multipart/form-data' method='post' class='loadFile'>
+                    <input type='file' id='imageinput' accept='.tiff, .TIFF, .tif, .TIF'>
+                    <input type='button' class='sidepanel-button'  
+                           value='Загрузить' onclick='loadImage();'>
+                </form>
             </div>
-            <div class='sidepanel-item input-button'>
-                <label>Изменить масштаб изображения</label>
-                <input type='text' id='image-scale' value='100' placeholder='Enter scale'>
-                <button class='sidepanel-button' id='button-scale'>Изменить</button>
+            <div class='sidepanel-item '>
+                Изменить масштаб изображения
+                <form class='loadFile'>
+                    <input type='text' id='image-scale' value='100' placeholder='Enter scale'>
+                    <button class='sidepanel-button' id='button-scale'>Изменить</button>
+                </form>
             </div>
             <div class='sidepanel-item'>
                 <!--<label>Set mask</label>-->
@@ -157,6 +160,8 @@
 <script type="text/javascript" src="https://cdn.rawgit.com/Viglino/ol-ext/master/dist/ol-ext.min.js"></script>
 <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/proj4js/1.1.0/proj4js-compressed.min.js'></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/geojson/0.5.0/geojson.min.js"></script>
+<script src="node_modules/tiff.js/tiff.min.js"></script>
+<script src="https://unpkg.com/dwt@18.0.2/dist/dynamsoft.webtwain.min.js"></script>
 
 <script type='text/javascript'>
     Proj4js.Datum['potsdam'] = {towgs84: '598.1,73.7,418.2,0.202,0.045,-2.455,6.7', ellipse: 'bessel', datumName: 'Potsdam Rauenberg 1950 DHDN'}
@@ -167,6 +172,7 @@
     var new_point= point.clone().transform(proj_31466, proj_wgs84)
 </script>
 <script src='./global_main.js'></script>
+<script type='text/x-python' src='image_conversion.py'></script>
 <!--<script type='text/javascript' src='./node_modules/geojson/geojson.min.js'></script>
 <script src='./scripts/main.js'></script>
 <script type='module' src='./scripts/drawFeatures.js'></script>
