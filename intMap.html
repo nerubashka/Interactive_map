@@ -13,8 +13,8 @@
     <div id='js-map' class='map'> </div>
     <div class='layersBlock'>
         <form action='index.html' target='_self'>
-        <button id='button-home' style = 'cursor: url("./svg_files/rocket.svg"), auto' title='Стартовая страница'></button></form>
-        <button id='button-mouse' style = 'cursor: url("./svg_files/mouse.svg"), auto' title='Очистить курсор' ></button>
+        <button id='button-home' title='Стартовая страница'></button></form>
+        <button id='button-mouse' title='Очистить курсор' ></button>
         <button id='button-point' title='Добавить метки'></button>
         <button id='button-linestring' title='Добавить линии'></button>
         <button id='button-box' title='Добавить прямоугольники'></button>
@@ -39,19 +39,18 @@
     <div class='sidepanel'>
         <h2 class='sidepanel-item'>Интерактивная карта</h2>
         <hr>
+        <div class='sidepanel-item loadFile'>
+            Запустить питоновский код
+            <input type='button' class='sidepanel-button' id='py-script'
+                       value='Запустить'>
+        </div>
+        <hr>
         <div class='sidepanel-item'>
             <label class='checkbox'>
                 Изменение объектов
                 <input type='checkbox' id='modify' >
                 <span class='checkbox-switch' ></span>
             </label>
-            <!--
-            <label class='checkbox' style='margin-top: 8px'>
-                Multiple selection
-                <input type='checkbox' id='multiSelect' >
-                <span class='checkbox-switch' ></span>
-            </label>
-            -->
         </div>
         <!--(https://translated.turbopages.org/proxy_u/en-ru.ru.6db602f5-65f75abf-e1a2a183-74722d776562/https/stackoverflow.com/questions/7346563/loading-local%20-json-file)-->
         <hr>
@@ -59,8 +58,8 @@
             Загрузить объект
             <form id='jsonFile' name='jsonFile' enctype='multipart/form-data' method='post' class='loadFile'>
                 <input type='file' id='featureinput' accept='.geojson, .geoJSON, .GEOJSON'>
-                <input type='button' class='sidepanel-button'
-                       value='Загрузить' onclick='loadFeature();'>
+                <input type='button' class='sidepanel-button' id='load-feature'
+                       value='Загрузить'>
             </form>
         </div>
         <hr>
@@ -87,40 +86,58 @@
                 <h3>Объекты</h3>
                 <p id='feature-measure'>+</p>
             </div>
-            
-            <div class='sidepanel-item loadFile'>
-                Удалить объект
-                <button class='sidepanel-button' id='feature-delete'>Удалить</button>
-            </div>
             <div class='sidepanel-item fileName'>
+                <button class='sidepanel-button load' id='feature-delete'>Удалить объект</button>
+                <button class='sidepanel-button load' id='button-download'>Скачать объект</button>
+            </div>
+            <div class='sidepanel-item fileName' id='div-save' style='display: none;'>
                 <label>Введите имя файла для сохранения</label>
                 <input type='text' placeholder='Enter file name' required id='file-name'/>
                 <button class='sidepanel-button load' id='button-downloadFile'> Скачать .geoJSON </button>
-                <button class='sidepanel-button load' id='button-downloadImage'> Скачать .tiff </button>
+                <!--<button class='sidepanel-button load' id='button-downloadImage'> Скачать .tiff </button>-->
             </div>
             <hr>
             <div class='sidepanel-item'><h3>Изображения</h3></div>
-            <div class='sidepanel-item'>
-                Загрузить изображение
-                <form id='imageFile' name='imageFile' enctype='multipart/form-data' method='post' class='loadFile'>
-                    <input type='file' id='imageinput' accept='.tiff, .TIFF, .tif, .TIF'>
-                    <input type='button' class='sidepanel-button'  
-                           value='Загрузить' onclick='loadImage();'>
-                </form>
-            </div>
-            <div class='sidepanel-item '>
-                Изменить масштаб изображения
-                <form class='loadFile'>
-                    <input type='text' id='image-scale' value='100' placeholder='Enter scale'>
-                    <button class='sidepanel-button' id='button-scale'>Изменить</button>
-                </form>
-            </div>
-            <div class='sidepanel-item'>
-                <!--<label>Set mask</label>-->
-                <button class='sidepanel-button load' id='button-mask'> Задать границы </button>
-                <button class='sidepanel-button load' id='full-size'>Развернуть</button>
-            </div>
-            <hr>
+            <section id='image-upload'>
+                <div class='sidepanel-item'>
+                    Загрузить изображение <b>TIFF</b>
+                    <form id='imageFile' name='imageFile' enctype='multipart/form-data' method='post' class='loadFile'>
+                        <input type='file' id='imageinput' accept='.tiff, .TIFF, .tif, .TIF'>
+                        <input type='button' class='sidepanel-button' id = 'load-image'
+                            value='Загрузить'>
+                    </form>
+                </div>
+                <div class='sidepanel-item loadFile'>                
+                    <label>Загрузить изображение <b>PNG</b></label>
+                    <input type='file' id='upload-image' name='image' accept='.png' hidden='hidden'>
+                    <button class='sidepanel-button' id='button-uploadImage'>Загрузить</button>
+                </div>
+            </section>
+            <section id='image-sidepanel' style='display: none'>
+                <div class='sidepanel-item' >
+                    <label>
+                        Прозрачность изображения<br>
+                        <input id="opacity-input" type="range" min="0" max="1" step="0.01" value="1" />
+                        <span id="opacity-output"></span>
+                    </label>
+                </div>
+                <div class='sidepanel-item fileName'>
+                    <button class='sidepanel-button' id='image-delete'>Удалить изображение</button>
+                    <button class='sidepanel-button load' id='full-size'>Развернуть</button>
+                </div>
+                <!--<div class='sidepanel-item '>
+                    Изменить масштаб изображения
+                    <form class='loadFile'>
+                        <input type='text' id='image-scale' value='100' placeholder='Enter scale'>
+                        <button class='sidepanel-button' id='button-scale'>Изменить</button>
+                    </form>
+                </div>-->
+                <!--<div class='sidepanel-item'>
+                    <label>Set mask</label>
+                    <button class='sidepanel-button load' id='button-mask'> Задать границы </button>
+                </div>-->
+                <hr>
+            </section>
         <!--</section>
         <div class='sidepanel-item log'>
             Console messages
@@ -149,15 +166,13 @@
 </script>
 
 <script type='text/javascript' src='./node_modules/jquery/dist/jquery.min.js'></script>
-<!--<script src='./node_modules/openlayers/dist/ol.js'></script>
-<script src='./node_modules/openlayers-ext/dist/ol-ext.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/elm-pep@1.0.6/dist/elm-pep.js'></script>-->
 <!-- Openlayers -->
 <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'></script>
 <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/ol@latest/dist/ol.js'></script>
 <!-- ol-ext -->
 <link rel="stylesheet" href="https://cdn.rawgit.com/Viglino/ol-ext/master/dist/ol-ext.min.css" />
 <script type="text/javascript" src="https://cdn.rawgit.com/Viglino/ol-ext/master/dist/ol-ext.min.js"></script>
+<!--proj4js, tiff-->
 <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/proj4js/1.1.0/proj4js-compressed.min.js'></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/geojson/0.5.0/geojson.min.js"></script>
 <script src="node_modules/tiff.js/tiff.min.js"></script>
@@ -171,9 +186,6 @@
     var point = new OpenLayers.LonLat(2769212.70, 5678724.61)
     var new_point= point.clone().transform(proj_31466, proj_wgs84)
 </script>
-<script src='./global_main.js'></script>
-<script type='text/x-python' src='image_conversion.py'></script>
-<!--<script type='text/javascript' src='./node_modules/geojson/geojson.min.js'></script>
-<script src='./scripts/main.js'></script>
-<script type='module' src='./scripts/drawFeatures.js'></script>
-<script type='module' src='./scripts/satimages.js'></script>-->
+<!--<script src='./global_main.js'></script>-->
+<script src='bundle.js'></script>
+<script type='text/x-python' src='test.py'></script>

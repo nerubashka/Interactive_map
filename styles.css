@@ -4,7 +4,7 @@
     --shadColor: #3c1053;
     --textColor: #1C1C1C;
     --textButtonColor: #3c1053;
-    --spWidth: 24%;
+    --spWidth: 30%;
     --marTop: 4px;
     --maxZindex: 2;
 }
@@ -62,6 +62,9 @@ body {
     height: 100%;
     width: var(--spWidth);
     background-color: var(--primColor);
+    overflow-x: hidden; 
+    overflow-x: auto; 
+    text-align:justify; 
 }
 
 .layersBlock {
@@ -71,6 +74,9 @@ body {
     left: var(--spWidth);
     height: 100%;
     margin: 8px; 
+}
+.layersBlock button {
+    cursor: url("./svg_files/mouse.svg"), auto
 }
 
 .log {
@@ -131,6 +137,9 @@ body {
     margin-top: var(--marTop);
 }
 
+#opacity-input {
+    width: 100%;
+}
 .butRight {
     overflow: hidden;
     align-items: center;

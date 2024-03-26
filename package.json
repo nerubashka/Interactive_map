@@ -3,6 +3,7 @@
     "main": "./src/scripts/.js",
     "description": "Interactive map with features for adding polygons and overlaying images",
     "dependencies": {
+        "child_process": "^1.0.2",
         "connect": "^3.7.0",
         "geojson": "^0.5.0",
         "jquery": "^3.7.1",
@@ -15,10 +16,14 @@
         "tiff.js": "^1.0.0"
     },
     "devDependencies": {
-        "vite": "^3.2.3"
+        "browserify": "latest",
+        "vite": "^3.2.3",
+        "watchify": "^4.0.0"
     },
     "scripts": {
         "start": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "build-js": "browserify global_main.js > bundle.js",
+        "watch-js": "watchify global_main.js -o bundle.js"
     }
 }
