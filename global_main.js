@@ -12,6 +12,7 @@ const fColor = '#fa9868'
 const sColor = '#31032A'
 const whiteColor = '#ffffff'
 let draw
+let pyodide = loadPyodide()
 
 const mapSave = {
     layers: [], 
@@ -142,13 +143,13 @@ map.addInteraction(translate)
 translate.setActive(false)
 
 translate.on('translateend', () => {
-    let feature = translate.lastFeature_
+    let feature = select.getFeatures().getArray()[0].values_.geometry
     if (feature.img !== undefined && feature.img.type === 'png') {
-        let feature = translate.lastFeature_
         let img = feature.img
         img.getSource().setCenter(ol.extent.getCenter(feature.getGeometry().getExtent()))
-        const mask = maskCoords(feature.getGeometry().flatCoordinates)
+        const mask = maskCoords(feature.getGeometry().getFlatCoordinates())
         img.getSource().setMask(mask)
+        consdole.log('mask set')
     }
 })
 
@@ -254,8 +255,9 @@ function addDraw(getValue = false) {
     map.addInteraction(draw)
     draw.on("drawend",function(e){
         let newFeature = e.feature
+        newFeature.setStyle(featureStyle)
         newFeature.name = getValue + '_' + mapSave.features.length
-        mapSave.features.push(e.feature)
+        mapSave.features.push(newFeature)
         console.log('Создано фигур: ' + mapSave.features.length)
         featuresList()
     })
@@ -421,7 +423,47 @@ saveF.onclick = () => {
 }
 
 // Изменять полигоны
+const pyButton = document.getElementById('mybutton')
 const modify = new ol.interaction.Modify({source: source})
+modify.on('modifyend', function(e) {
+    const feature = e.features.getArray()[0]
+    if (feature.img !== undefined) {
+        if (feature.img.type === 'tiff') {
+            const data = feature.getGeometry().getOrientedFlatCoordinates()
+            // pyButton.setAttribute('data', '' + data +';' + feature.img.name)
+            // pyButton.setAttribute('data', '' + data)
+            // pyButton.click()
+            let feature = select.getFeatures().getArray()[0].values_.geometry
+        }
+        if (feature.img.type === 'png') {
+            let img = feature.img
+            img.getSource().setCenter(ol.extent.getCenter(feature.getGeometry().getExtent()))
+            const mask = maskCoords(feature.getGeometry().getFlatCoordinates())
+            img.getSource().setMask(mask)
+        }
+    }
+    //console.log();
+})
+
+const pyDownload = document.getElementById('py-download')
+pyDownload.addEventListener('click', ()=>{
+    const img = document.getElementById('img-image-button')
+    console.log('img.src len', img.src.length)
+    fetch(img.src)
+    .then(res => res.blob())
+    .then(blob => {
+        // const blob = new Blob([img], {type : 'image/png'})
+        let url = window.URL.createObjectURL(blob)
+
+        var downloadLink = document.createElement('a')
+        downloadLink.href = url
+        downloadLink.download = 'image.png'
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+    })
+    console.log('click js')
+})
+
 const modifyChange = document.getElementById('modify')
 modifyChange.addEventListener('change', ()=>{
     if (modifyChange.checked){
@@ -535,29 +577,38 @@ function loadImage() {
     }
     else {
         file = input.files[0]
+        let img_name = file.name.split('.')[0]
+        while (mapSave.images.filter((el) => {return el.name === img_name}).length !== 0) 
+            img_name = img_name + '+'
         let feature = getSelect()
         feature.getStyle().getFill().color_ = whiteColor + '00'
         const extent = feature.values_.geometry.extent_
+
         let geoimg = new ol.layer.Image({
             source: new ol.source.ImageStatic({
                 imageExtent: extent,
                 imageLoadFunction: function(image, src) {
                     fr = new FileReader()
                     fr.onload = function (e) {
-                        let tiff = new Tiff({buffer: e.target.result})
-                        let canvas = tiff.toCanvas()
+                        // console.log('e.target.result', e.target.result)
+                        // let options = $('#ul-data').html()
+                        // options += '<li name="'+ img_name + '">' + new Uint8Array(e.target.result) + '</li>'
+                        // $('#ul-data').html(options)
+                        let canvas = new Tiff({buffer: e.target.result}).toCanvas()
                         image.getImage().src = canvas.toDataURL()
                     }
                     fr.readAsArrayBuffer(file)
+                    //fr.readAsText(file)
                 },
                 projection: 'EPSG:3785',
             }),
         })
         geoimg.ftr = feature
-        geoimg.name = file.name.split('.')[0]
+        geoimg.name = img_name
         geoimg.type = 'tiff'
-        while (mapSave.images.filter((el) => {return el.name === geoimg.name}).length !== 0) 
-            geoimg.name = geoimg.name + '+'
+        // console.log('tiff', tiff)
+        // geoimg.tiff = tiff // new Uint8Array(tiff)
+        
         feature.img = geoimg
         mapSave.images.push(geoimg)
         map.addLayer(geoimg)
@@ -623,8 +674,8 @@ selectImage.onclick = () => {
   const option = selectOption.querySelector(`option[value="${selectOption.value}"]`)
   for (let i = 0; i < mapSave.images.length; i++) {
     if (mapSave.images[i].name === option.value) {
-      mapSave.images[i].setVisible(true)
       mapSave.images[i].ftr.getStyle().getFill().color_ = whiteColor + '00'
+      mapSave.images[i].setVisible(true)
       console.log('Изображение', mapSave.images[i].name, 'отображено')
     }
   }
@@ -635,8 +686,9 @@ const hideImage = document.getElementById('images-hide')
 hideImage.onclick = () => {
   if (mapSave.images.length !== 0) {
     for (let i = 0; i < mapSave.images.length; i++) {
-        mapSave.images[i].setVisible(false)
+        console.log(mapSave.images[i].ftr)
         mapSave.images[i].ftr.getStyle().getFill().color_ = whiteColor + '60'
+        mapSave.images[i].setVisible(false)
     }
     console.log('Все изображения скрыты')
   }
@@ -644,7 +696,7 @@ hideImage.onclick = () => {
 
 function imageDelete (image) {
     image.ftr.img = undefined
-    image.ftr.getStyle().getFill().color_ = whiteColor + '00'
+    image.ftr.getStyle().getFill().color_ = whiteColor + '60'
     mapSave.images = mapSave.images.filter((el) => {
         return el.name !== image.name
     })
@@ -720,19 +772,38 @@ drawSaveIm.onclick = () => {
 }*/
 
 // скрипт на python
-const pyS = document.getElementById('py-script')
+
+async function loadLib() {
+    
+    await pyodide.loadPackage(['numpy', 'matplotlib', 'micropip'])
+    const micropip = pyodide.pyimport('micropip');
+    await micropip.install(['opencv-python', 'pillow'])
+    //const PIL = pyodide.pyimport('PIL');
+}
+// loadLib().then(() => {
+//     console.log('>>> loadFunc start')
+    
+//     //document.getElementById('image-script').innerHTML = jqXHR.responseText
+// })
+var jqXHR = $.ajax({
+    type: "POST",
+    //url: "/test.py",
+    url: "/image_Transform.py",
+    async: false//,
+    //data: { param: input }
+})
+document.getElementById('image-script').innerHTML = jqXHR.responseText
+// function loadFunc() {
+    
+    
+// }
+// setTimeout(loadFunc, 10000)
+/*
+const pyS = document.getElementById('py-script-button')
 pyS.onclick = () => {
     pyScript()
 }
-function pyScript () {
-    const child_process = require('child_process');
-    console.log('exec', child_process.exec)
-    exec('python test.py', (error, stdout, stderr) => {
-    if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-    }
-    console.log(`stdout: ${stdout}`);
-    console.error(`stderr: ${stderr}`);
-    });
+function pyScript (){
+    console.log('ok')
 }
+pyS.click()*/

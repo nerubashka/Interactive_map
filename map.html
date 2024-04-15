@@ -8,7 +8,12 @@
     <link rel='stylesheet' href='./node_modules/ol/ol.css'>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet'>
     <link rel='stylesheet' href='./styles.css'>
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script></head>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
+    <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
+</head>
+    
+
 <body>
     <div id='js-map' class='map'> </div>
     <div class='layersBlock'>
@@ -39,12 +44,26 @@
     <div class='sidepanel'>
         <h2 class='sidepanel-item'>Интерактивная карта</h2>
         <hr>
-        <div class='sidepanel-item loadFile'>
+        <!--<div class='sidepanel-item loadFile' hidden>
             Запустить питоновский код
-            <input type='button' class='sidepanel-button' id='py-script'
+            <input type='button' class='sidepanel-button' id='py-script-button'
                        value='Запустить'>
         </div>
-        <hr>
+        <div class='sidepanel-item' hidden>
+            <button id="pybutton" class='sidepanel-button' data="12" />
+            <--<div id="resultdivlib">Запуск python lib</div>->
+        </div>-->
+        <py-config>
+            packages = ['numpy', 'opencv-python', 'pillow'] # <!--, 'tiffwrite', 'scikit-image'-->
+        </py-config>
+        <py-script id='image-script'></py-script>
+        <div class='sidepanel-item' hidden>
+            <button id='mybutton' class='sidepanel-button' data="12" />
+            <ul id='ul-data'></ul>
+            <button id='py-download'>
+            <img id='img-image-button'>
+        </div>
+        
         <div class='sidepanel-item'>
             <label class='checkbox'>
                 Изменение объектов
@@ -151,6 +170,8 @@
     
 </body>
 </html>
+<!--<py-script id='lib-script'></py-script>-->
+
 
 <script>
     var alarmSeeUp = function( event ) {
@@ -177,6 +198,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/geojson/0.5.0/geojson.min.js"></script>
 <script src="node_modules/tiff.js/tiff.min.js"></script>
 <script src="https://unpkg.com/dwt@18.0.2/dist/dynamsoft.webtwain.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
 
 <script type='text/javascript'>
     Proj4js.Datum['potsdam'] = {towgs84: '598.1,73.7,418.2,0.202,0.045,-2.455,6.7', ellipse: 'bessel', datumName: 'Potsdam Rauenberg 1950 DHDN'}
